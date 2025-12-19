@@ -53,9 +53,9 @@ export default function SingularityDashboard() {
             <div className="glass-panel rounded-2xl p-6 h-[45%]">
                 <h2 className="text-lg text-emerald-300 mb-4 flex items-center gap-2"><Terminal /> LOG FEED</h2>
                 <div className="text-xs font-mono text-emerald-500/80 space-y-1">
-                    <p>> System initialized...</p>
-                    <p>> Visual interface loaded.</p>
-                    <p>> Waiting for Copilot...</p>
+                    <p>&gt; System initialized...</p>
+                    <p>&gt; Visual interface loaded.</p>
+                    <p>&gt; Waiting for Copilot...</p>
                 </div>
             </div>
         </div>
