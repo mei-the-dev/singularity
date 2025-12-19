@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+const { spawn } = require('child_process');
+console.log(">>> LAUNCHING SINGULARITY UI...");
+spawn('npm', ['run', 'dev', '--prefix', 'ui'], { stdio: 'inherit', shell: true });

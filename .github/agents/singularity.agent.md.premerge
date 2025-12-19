@@ -1,0 +1,12 @@
+---
+name: "singularity (workspace proxy)"
+description: "Workspace-level pointer to the canonical agent config under `singularity/`. This file ensures workspace tools that expect the agent at the workspace root can find a valid config."
+repoRoot: singularity
+tools:
+  - 'my-mcp-server-74a54c41/*'
+  - 'singularity-core/*'
+  - 'pylance-mcp-server/*'
+---
+
+# Note
+This file points to the `singularity/` folder as the canonical repo root. The authoritative agent file lives at `singularity/.github/agents/singularity.agent.md` (repoRoot: `.`) and contains the full instructions. Keep this root-level file minimal and in sync if you change the canonical location.

@@ -1,0 +1,8 @@
+{
+  "name": "singularity",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node ./mcp/__tests__/run-tests.js"
+  }
+}

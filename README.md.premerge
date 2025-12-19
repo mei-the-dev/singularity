@@ -1,0 +1,17 @@
+# Singularity — DevOps Orchestrator
+
+This repository contains the Singularity MCP server and the Nexus UI.
+
+Important: The canonical project root for development is the `singularity/` folder.
+When opening this repository in VS Code, open the `singularity/` folder (or use the provided `singularity.code-workspace` workspace file) so tools and tests run from the correct root.
+
+Quick start
+
+- Open `singularity.code-workspace` in VS Code or open the `singularity/` folder.
+- From `singularity/` run `node verify-singularity.js` to verify environment and required tools.
+- To run the UI locally: `npm --prefix ui run dev` (or use `start_service` in the MCP).
+
+Contributing
+
+- Follow the DevOps Lifecycle described in `.github/agents/singularity.agent.md`.
+- Make sure to run `node verify-singularity.js` and `npm test` before opening a PR.

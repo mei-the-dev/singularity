@@ -1,0 +1,1 @@
+{"scripts":{"test":"node -e \"console.log(\\\"RUN_TEST_OK\\\")\""}}
