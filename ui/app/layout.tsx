@@ -1,14 +1,14 @@
+import type { Metadata } from "next";
 import "./globals.css";
-export default function Root({children}: {children: React.ReactNode}) {
+
+export const metadata: Metadata = { title: "Singularity Nexus", description: "Event Horizon Interface" };
+
+import { IssueProvider } from '../contexts/IssueStore';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <div className="black-hole-container">
-            <div className="accretion-disk"></div>
-            <div className="singularity"></div>
-        </div>
-        {children}
-      </body>
+      <body className="antialiased selection:bg-gold/30 selection:text-gold"><IssueProvider>{children}</IssueProvider></body>
     </html>
   );
 }
