@@ -15,7 +15,13 @@ const TOOLS = [
   { name: "create_pr", handler: Git.createPR, schema: { type: "object", properties: { title:{type:"string"} }, required:["title"] } },
   { name: "start_task", handler: Git.startTask, schema: { type: "object", properties: { issue_id:{type:"number"} }, required:["issue_id"] } },
   { name: "get_git_diff", handler: Git.getDiff, schema: { type: "object", properties: {} } },
-  
+
+  // V27: Register new tools
+  { name: "read_file", handler: Files.readFile, schema: { type: "object", properties: { path:{type:"string"} }, required:["path"] } },
+  { name: "stat_file", handler: Files.statFile, schema: { type: "object", properties: { path:{type:"string"} }, required:["path"] } },
+  { name: "check_pipeline", handler: Git.checkPipeline, schema: { type: "object", properties: {} } },
+  { name: "update_issue", handler: Git.updateIssue, schema: { type: "object", properties: { issue_number:{type:"number"}, state:{type:"string"} }, required:["issue_number", "state"] } },
+
   { name: "search_code", handler: Files.searchCode, schema: { type: "object", properties: { query:{type:"string"} }, required:["query"] } },
   { name: "explore_file_tree", handler: Files.exploreTree, schema: { type: "object", properties: { path:{type:"string"} } } },
   { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } }
