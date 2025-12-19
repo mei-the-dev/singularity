@@ -18,6 +18,7 @@ const TOOLS = [
 
   // V27: Register new tools
   { name: "read_file", handler: Files.readFile, schema: { type: "object", properties: { path:{type:"string"} }, required:["path"] } },
+  { name: "write_file", handler: Files.writeFile, schema: { type: "object", properties: { path:{type:"string"}, content:{type:"string"} }, required:["path","content"] } },
   { name: "stat_file", handler: Files.statFile, schema: { type: "object", properties: { path:{type:"string"} }, required:["path"] } },
   { name: "check_pipeline", handler: Git.checkPipeline, schema: { type: "object", properties: {} } },
   { name: "update_issue", handler: Git.updateIssue, schema: { type: "object", properties: { issue_number:{type:"number"}, state:{type:"string"} }, required:["issue_number", "state"] } },
