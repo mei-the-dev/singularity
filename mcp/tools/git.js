@@ -10,29 +10,42 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function findRepoRoot(start) {
-    let d = start;
-    while (d !== path.parse(d).root) {
+    // Allow an explicit override via environment for edge cases
+    const override = process.env.MCP_REPO_OVERRIDE || process.env.SINGULARITY_ROOT;
+    if (override) return path.resolve(override);
+
+    // Walk up looking specifically for the 'singularity' folder first, then .git
+    let d = path.resolve(start);
+    const root = path.parse(d).root;
+    while (d && d !== root) {
+        if (path.basename(d) === 'singularity') return d;
         if (fs.existsSync(path.join(d, '.git'))) return d;
         d = path.dirname(d);
     }
-    return process.cwd(); // Fallback
+
+    // Final fallback: the singularity folder relative to this file
+    return path.resolve(__dirname, '..', '..');
 }
 const REPO_ROOT = findRepoRoot(__dirname);
+export { REPO_ROOT, findRepoRoot };
 
 // 2. SAFE EXECUTION WRAPPER
-const runSafe = (cmd, args) => {
-    return execFileSync(cmd, args, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+const runSafe = (cmd, args = [], opts = {}) => {
+    return execFileSync(cmd, args, { cwd: REPO_ROOT, encoding: 'utf8', ...opts }).toString().trim();
 };
 
-const runShell = (cmd) => {
-    return execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+const runShell = (cmd, opts = {}) => {
+    return execSync(cmd, { cwd: REPO_ROOT, encoding: 'utf8', ...opts }).toString().trim();
 };
 
 // --- TOOLS ---
 
 export const listIssues = async ({ limit }) => {
-    try { 
-        return { json: runShell(`gh issue list --limit ${limit||10} --json number,title,state,body`) };
+    try {
+        const args = ['issue', 'list', '--limit', String(limit || 10), '--json', 'number,title,state,body'];
+        if (process.env.MCP_GH_REPO) args.push('--repo', process.env.MCP_GH_REPO);
+        const out = runSafe('gh', args);
+        try { return { issues: JSON.parse(out) }; } catch (e) { return { json: out }; }
     } catch(e) { return { error: "GH CLI Error: " + e.message }; }
 };
 
@@ -54,15 +67,19 @@ export const updateIssue = async ({ issue_number, state }) => {
 export const createPR = async ({ title }) => {
     try {
         runShell('git push -u origin HEAD');
-        const url = runSafe('gh', ['pr', 'create', '--title', title, '--fill']);
+        const ghArgs = ['pr', 'create', '--title', title, '--fill'];
+        if (process.env.MCP_GH_REPO) ghArgs.push('--repo', process.env.MCP_GH_REPO);
+        const url = runSafe('gh', ghArgs);
         return { url };
     } catch(e) { return { error: e.message }; }
 };
 
 export const checkPipeline = async () => {
     try {
-        const json = runShell('gh run list --limit 1 --json status,conclusion,url');
-        const runs = JSON.parse(json);
+        const ghArgs = ['run', 'list', '--limit', '1', '--json', 'status,conclusion,url'];
+        if (process.env.MCP_GH_REPO) ghArgs.push('--repo', process.env.MCP_GH_REPO);
+        const json = runSafe('gh', ghArgs);
+        const runs = JSON.parse(json || '[]');
         return { latest_run: runs[0] || "No runs found" };
     } catch (e) { return { error: "Failed to check pipeline: " + e.message }; }
 };

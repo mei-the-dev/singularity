@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const server = spawn('node', [join(__dirname, 'index.js')], { stdio: ['pipe', 'pipe', 'inherit'] });
+const server = spawn('node', [join(__dirname, 'index.js')], { stdio: ['pipe', 'pipe', 'inherit'], cwd: path.join(__dirname, '..', '..') });
 let id = 1;
 function send(method, params = {}){
   const req = { jsonrpc: '2.0', id: id++, method, params };
