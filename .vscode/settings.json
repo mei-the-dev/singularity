@@ -3,7 +3,7 @@
         "singularity-v21": {
             "command": "/home/mei/.local/share/mise/installs/node/25.0.0/bin/node",
             "args": [
-                "/run/media/mei/neo/diamond-mcp/mcp/index.js"
+                "/run/media/mei/neo/diamond-mcp/singularity/mcp/index.js"
             ],
             "env": {
                 "PATH": "/home/mei/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/mei/.config/Code/User/globalStorage/github.copilot-chat/copilotCli:/home/mei/.local/share/mise/installs/node/25.0.0/bin:/home/mei/.local/share/omarchy/bin/:/home/mei/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl"
