@@ -78,6 +78,9 @@ tools:
     args:
       path: "string (optional, relative)"
       depth: "number (optional)"
+  - name: read_context
+    description: "Return the active .task-context (current issue/branch state)."
+    args: {}
 
 ---
 
