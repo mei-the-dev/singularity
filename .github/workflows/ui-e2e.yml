@@ -1,0 +1,38 @@
+name: UI E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - 'ui/**'
+      - '.github/workflows/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install UI dependencies
+        run: npm ci --prefix ui
+
+      - name: Install Playwright browsers (non-interactive)
+        run: npm --prefix ui run playwright:install
+
+      - name: Start UI dev server
+        run: |
+          npm --prefix ui run dev &
+          npx wait-on http://localhost:3000
+        # keep the server in background and wait for port to be ready
+
+      - name: Run Playwright E2E
+        run: npm --prefix ui run test:e2e
+        env:
+          CI: true
