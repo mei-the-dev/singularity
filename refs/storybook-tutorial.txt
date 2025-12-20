@@ -1,0 +1,191 @@
+Here is a high-density system instruction file designed to be saved as `STORYBOOK_CONTEXT.md` or `.cursorrules`. You can feed this file to any AI coding assistant (Cursor, Copilot, etc.) to immediately align it with the architectural requirements of your project.
+
+```markdown
+# AI CONTEXT: BLACKHOLE BOARD STORYBOOK ARCHITECTURE
+
+## 1. PROJECT IDENTITY & VISUAL SYSTEM
+- **Core Tech:** React (TSX), TailwindCSS, Lucide React.
+- **Visual Theme:** "Event Horizon" (High contrast, Amber on Black, gradients, glassmorphism).
+- **Key Colors:** `bg-black`, `text-amber-100`, `border-amber-900/30`.
+- **Animation Strategy:** CSS Modules or Tailwind arbitrary values for orbital mechanics (`animate-spin-slow`, `animate-orbit`).
+
+## 2. REFACTORING STRATEGY (MONOLITH -> ATOMIC)
+*The codebase is currently a monolith (`blackhole-github-board.tsx`). All Storybook tasks require extraction first.*
+
+### Extraction Map
+| Component Name | Atomic Level | Logic Source (Line Ref) | Props Interface |
+| :--- | :--- | :--- | :--- |
+| `BlackholeBackground` | Atom/Env | Background, Orbits, Blackhole divs | `mousePosition: {x,y}` |
+| `StatusColumn` | Molecule | Column container + Header | `title: string, color: string, count: number` |
+| `IssueCard` | Molecule | Individual ticket card | `issue: IssueObj` |
+| `IssueModal` | Organism | Full screen modal overlay | `issue: IssueObj, isOpen: boolean, onClose: () => void` |
+| `BoardHeader` | Organism | Nav, Search, Filter bar | `onSearch: (q) => void` |
+
+## 3. STORYBOOK CONFIGURATION RULES
+*All generated stories must adhere to these configuration constraints to function in the dark environment.*
+
+### A. `.storybook/preview.tsx` (Required Context)
+```tsx
+import type { Preview } from "@storybook/react";
+import "../src/index.css"; // MUST include Tailwind directives
+
+const preview: Preview = {
+  parameters: {
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    controls: { matchers: { color: /(background|color)$/i, date: /Date$/ } },
+    backgrounds: {
+      default: 'event-horizon',
+      values: [
+        { name: 'event-horizon', value: '#000000' },
+        { name: 'deep-space', value: '#0f0f0f' }
+      ]
+    },
+    layout: 'centered', // Default layout
+  },
+  decorators: [
+    (Story) => (
+      // Enforce dark mode text color inheritance for all isolated components
+      <div className="text-amber-100 antialiased selection:bg-amber-500/30">
+        <Story />
+      </div>
+    ),
+  ],
+};
+export default preview;
+
+```
+
+## 4. COMPONENT STORY TEMPLATES (CSF 3.0)
+
+### Template 1: Visual State Testing (`IssueCard`)
+
+*Use for components with complex conditional rendering (Priority/Type).*
+
+```tsx
+// src/stories/IssueCard.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { IssueCard } from '../components/IssueCard';
+
+const meta: Meta<typeof IssueCard> = {
+  title: 'Molecules/IssueCard',
+  component: IssueCard,
+  tags: ['autodocs'],
+  argTypes: {
+    priority: { control: 'select', options: ['low', 'medium', 'high', 'critical'] },
+    status: { control: 'radio', options: ['todo', 'inprogress', 'done'] },
+  },
+  // Mock standard Lucide icons if necessary, or rely on component imports
+};
+export default meta;
+
+type Story = StoryObj<typeof IssueCard>;
+
+export const Default: Story = {
+  args: {
+    issue: {
+      id: 101,
+      title: "Refactor Gravity Well",
+      priority: "medium",
+      type: "feature",
+      points: 5,
+      assignee: "AI",
+      status: "todo"
+    }
+  }
+};
+
+export const CriticalAlert: Story = {
+  args: {
+    issue: {
+      ...Default.args.issue,
+      priority: "critical",
+      type: "bug",
+      title: "System Collapse Imminent"
+    }
+  },
+  parameters: {
+    backgrounds: { default: 'deep-space' }
+  }
+};
+
+```
+
+### Template 2: Interactive Overlays (`IssueModal`)
+
+*Use `layout: 'fullscreen'` and fixed positioning context.*
+
+```tsx
+// src/stories/IssueModal.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { IssueModal } from '../components/IssueModal';
+
+const meta: Meta<typeof IssueModal> = {
+  title: 'Organisms/IssueModal',
+  component: IssueModal,
+  parameters: { layout: 'fullscreen' },
+  argTypes: { onClose: { action: 'closed' } }
+};
+export default meta;
+
+export const OpenState: StoryObj<typeof IssueModal> = {
+  args: {
+    isOpen: true, // Force open for visual regression testing
+    issue: {
+      id: 404,
+      title: "Event Horizon Unreachable",
+      priority: "high",
+      status: "review",
+      points: 13,
+      type: "infrastructure",
+      description: "Singularity density has exceeded 9000 units..."
+    }
+  },
+  decorators: [
+    (Story) => (
+      <div className="h-screen w-full bg-black/50 relative">
+        <Story />
+      </div>
+    )
+  ]
+};
+
+```
+
+### Template 3: Performance/Animation (`BlackholeBackground`)
+
+*Isolate heavy CSS animations to debug FPS impact.*
+
+```tsx
+// src/stories/BlackholeBackground.stories.tsx
+import { BlackholeBackground } from '../components/BlackholeBackground';
+
+export default {
+  title: 'Environment/Background',
+  component: BlackholeBackground,
+  parameters: { layout: 'fullscreen' }
+};
+
+export const Idle: StoryObj<typeof BlackholeBackground> = {
+  args: { mousePosition: { x: 0, y: 0 } }
+};
+
+export const Interactive: StoryObj<typeof BlackholeBackground> = {
+  args: { mousePosition: { x: 500, y: 500 } },
+  parameters: {
+    docs: { description: { story: "Simulates mouse hovering near center to test parallax offset calculations." } }
+  }
+};
+
+```
+
+## 5. GENERATION RULES FOR AI ASSISTANT
+
+1. **Never** write a story for the monolith `BlackholeBoard` default export.
+2. **Always** suggest the extraction refactor before writing the story.
+3. **Always** wrap stories in a dark container (or rely on Preview decorator).
+4. **Mock Data:** Use `amber-` based color logic in mock data to match the established design token system.
+5. **Interactivity:** Use `fn()` or `console.log` for callbacks like `onClose` or `onDrag`.
+
+```
+
+```
