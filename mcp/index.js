@@ -76,18 +76,19 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const tool = TOOLS.find(t => t.name === req.params.name);
   if (!tool) throw new Error("Unknown tool");
 
-  // Watchdog: warn if a tool handler is taking too long (indicates a possible blocking op).
+  // Enforce non-blocking: wait up to WATCHDOG_MS for the handler to respond.
   const WATCHDOG_MS = 20000;
-  let warned = false;
-  const timer = setTimeout(() => { warned = true; console.warn(`MCP: tool handler '${tool.name}' running longer than ${WATCHDOG_MS}ms`); }, WATCHDOG_MS);
-
   try {
-    const res = await tool.handler(req.params.arguments);
-    clearTimeout(timer);
-    if (warned) console.warn(`MCP: tool handler '${tool.name}' has finished after a long run.`);
-    return { content: [{ type: "text", text: JSON.stringify(res) }] };
-  } catch(e) {
-    clearTimeout(timer);
+    const handlerPromise = (async () => ({ result: await tool.handler(req.params.arguments) }))();
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve({ timeout: true }), WATCHDOG_MS));
+    const raced = await Promise.race([handlerPromise, timeoutPromise]);
+    if (raced && raced.timeout) {
+      const msg = `Tool '${tool.name}' exceeded ${WATCHDOG_MS}ms. Long-running operations should be started with 'start_service' or 'start_development_session' and run detached. See refs/no_hanging_agent.txt`;
+      console.warn('MCP TIMEOUT:', msg);
+      return { content: [{ type: "text", text: msg }], isError: true };
+    }
+    return { content: [{ type: "text", text: JSON.stringify(raced.result) }] };
+  } catch (e) {
     return { content: [{ type: "text", text: "Error: " + e.message }], isError: true };
   }
 });

@@ -36,8 +36,16 @@ You must parse user input for these triggers and EXECUTE the tool immediately.
 
 ### Non-Blocking Protocol (ENFORCED)
 To avoid agent hangs when starting servers, follow these rules strictly:
-- **Always use `start_service` or `start_development_session`** to start long-lived services. These helpers spawn processes detached, write logs to `.task-context/logs/`, and return immediately with `pid` and `log` info.
-- **Do not run long-lived commands synchronously in request handlers.** If a tool needs to perform a long operation, it must spawn a detached process and return a status object quickly.
-- **Watchdog & Timeout:** The MCP server now logs a warning if any tool handler runs for more than 20s. See `mcp/index.js` for enforcement behavior.
+- **Always use `start_service` or `start_development_session`** to start long-lived services. These helpers spawn processes detached, write logs to `.task-context/logs/`, and return immediately with `{ pid, log }` so the agent can continue.
+- **Do not run long-lived commands synchronously in request handlers.** If a tool needs to perform a long operation, spawn it detached and return a status object quickly.
+- **Watchdog & Timeout (20s):** The MCP server enforces a 20s handler timeout. If a tool handler exceeds the limit, MCP returns an error instructing you to use `start_service` or `start_development_session`. See `mcp/index.js` for enforcement behavior.
+
+Example (preferred):
+```bash
+# Start Storybook detached (agent helpers use this pattern)
+nohup npm --workspace=ui run storybook -- --ci -p 6006 > .task-context/logs/storybook.log 2>&1 & echo $!
+# Then wait on port
+npx wait-on http://localhost:6006 && echo 'Storybook ready'
+```
 
 See `refs/no_hanging_agent.txt` for the full protocol and examples.

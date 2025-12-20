@@ -91,7 +91,7 @@ tools:
 - **Explicit Arguments:** When calling `start_task`, `start_service`, or `create_pr`, always include the minimal args (e.g., `issue_id`, `command`, `title`).
 - **Background Servers Required:** Start long-lived servers (for example Storybook) using `start_service` or the `/storybook` pseudo-command and run them as background/detached processes; **Storybook should bind to port 6006** when used by tests and automation.
 - **No ad-hoc sleep/curl readiness checks:** Avoid `sleep && curl` or similar ad-hoc polling to verify service readiness; prefer health-check endpoints, port checks, or the `start_service` tool which validates a port is listening.
-- **Non-Blocking Protocol (ENFORCED):** Long-running commands must be executed detached with logs written to `.task-context/logs/`. The MCP server enforces a watchdog that warns when a tool handler runs for more than 20s — prefer using `start_service` which returns immediately with `{ pid, log }`. See `refs/no_hanging_agent.txt` for the full protocol.
+- **Non-Blocking Protocol (ENFORCED):** Long-running commands must be executed detached with logs written to `.task-context/logs/`. The MCP server enforces a watchdog (20s) and will return an error if a tool handler takes too long — prefer using `start_service` or `start_development_session` which return immediately with `{ pid, log }`. See `refs/no_hanging_agent.txt` for the full protocol and examples (nohup, log checks, teardown).
 
 ## 🔧 Agent Developer Notes (mapping to code & server)
 
