@@ -112,3 +112,7 @@ export const startTask = async ({ issue_id }) => {
     writeContext({ currentTask: issue_id, status: "in-progress" });
     return { msg: `Switched context to issue #${issue_id}` };
 };
+
+// Export helper for tests
+export const getRepoRoot = () => REPO_ROOT;
+export const resolveRepoRoot = () => findRepoRoot(__dirname);
