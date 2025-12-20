@@ -1,0 +1,23 @@
+name: Post-merge smoke tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run smoke tests
+        run: |
+          cd ui
+          chmod +x ./scripts/smoke-test.sh
+          ./scripts/smoke-test.sh
