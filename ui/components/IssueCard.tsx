@@ -10,11 +10,13 @@ export default function IssueCard({ issue, onOpen }: { issue: Issue; onOpen?: (i
       layout
       drag
       dragMomentum={false}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.03, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      className="glass-panel p-4 rounded-lg cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-400/60 transition-shadow duration-150 ease-in-out hover:shadow-lg"
+      whileDrag={{ scale: 0.98, opacity: 0.9 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+      className="glass-panel p-4 rounded-lg cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-400/60 transition-shadow duration-150 ease-in-out hover:shadow-2xl"
       onDoubleClick={() => onOpen && onOpen(issue.id)}
-      style={{ touchAction: 'none', color: '#fff', background: 'rgba(20,20,20,0.7)' }}
+      style={{ touchAction: 'none', color: 'var(--gold)', background: 'linear-gradient(180deg, rgba(20,20,20,0.8), rgba(8,8,10,0.7))' }}
       role="button"
       tabIndex={0}
       aria-label={`Issue card: ${issue.title}`}

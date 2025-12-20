@@ -1,5 +1,6 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import IssueCard from './IssueCard';
 
 type SimpleIssue = { id: string; title: string; type?: string; assignee?: string };
@@ -15,9 +16,12 @@ const statusFromTitle = (title: string) => {
 export default function KanbanColumn({ title, issues }: { title: string; issues: SimpleIssue[] }) {
   const status = title.toLowerCase().includes('progress') ? 'in-progress' : title.toLowerCase().includes('done') ? 'done' : 'backlog';
 
+  const [isDragOver, setIsDragOver] = useState(false);
+
   const onDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    const id = e.dataTransfer.getData('text/issue-id');
+    setIsDragOver(false);
+    const id = e.dataTransfer?.getData('text/issue-id');
     if (!id) return;
     try {
       await fetch('/api/issues', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) });
@@ -27,7 +31,19 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
     }
   };
 
-  const onDragOver = (e: React.DragEvent) => e.preventDefault();
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const onDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const onDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
 
   return (
     <div className="min-w-[320px]" data-testid="kanban-column" aria-label={title} role="listitem">
@@ -35,13 +51,23 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
         <h3 className="text-sm font-medium text-white">{title}</h3>
         <div className="text-xs text-white/50">{issues.length}</div>
       </div>
-      <div onDrop={onDrop} onDragOver={onDragOver} className="space-y-3 min-h-[300px] transition-all rounded-md p-2 hover:bg-white/5" aria-label={`${title} issues`} role="list">
+      <motion.div
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
+        className={`space-y-3 min-h-[300px] transition-all rounded-md p-2 hover:bg-white/5 ${isDragOver ? 'drop-highlight' : ''}`}
+        animate={isDragOver ? { scale: 1.01, boxShadow: '0 12px 40px rgba(255,215,0,0.12)' } : { scale: 1, boxShadow: '0 0px 0 rgba(0,0,0,0)' }}
+        transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+        aria-label={`${title} issues`}
+        role="list"
+      >
         {issues.map((i) => (
-          <div key={i.id} draggable onDragStart={(e) => e.dataTransfer.setData('text/issue-id', i.id)} tabIndex={0}>
+          <div key={i.id} draggable onDragStart={(e) => e.dataTransfer?.setData('text/issue-id', i.id)} tabIndex={0}>
             <IssueCard issue={{ id: i.id, title: i.title, status: statusFromTitle(title) as any, assignee: i.assignee }} />
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
