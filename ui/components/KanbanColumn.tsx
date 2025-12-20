@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import IssueCard from './IssueCard';
+import { useAnnouncer } from './Announcer';
 
 type SimpleIssue = { id: string; title: string; type?: string; assignee?: string };
 
@@ -14,6 +15,7 @@ const statusFromTitle = (title: string) => {
 };
 
 export default function KanbanColumn({ title, issues }: { title: string; issues: SimpleIssue[] }) {
+  const announcer = useAnnouncer();
   const status = title.toLowerCase().includes('progress') ? 'in-progress' : title.toLowerCase().includes('done') ? 'done' : 'backlog';
 
   const [isDragOver, setIsDragOver] = useState(false);
@@ -82,7 +84,10 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
               if (!targetStatus) return;
               e.preventDefault();
               try {
-                await fetch('/api/issues', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: i.id, status: targetStatus }) });
+                const res = await fetch('/api/issues', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: i.id, status: targetStatus }) });
+                if (res.ok) {
+                  try { announcer.announce(`Moved ${i.title} to ${targetStatus.replace('-', ' ')}`); } catch {}
+                }
                 if (typeof window !== 'undefined' && !process.env.JEST_WORKER_ID) window.location.reload();
               } catch (err) {
                 console.error(err);
