@@ -25,6 +25,8 @@ You must parse user input for these triggers and EXECUTE the tool immediately.
 
 > Note: Prefer the `/storybook` pseudo-command or the `start_service` tool to start Storybook on port **6006**. Start long-lived servers in background (detached) processes; see Safety Rules below for requirements.
 
+> If port 6006 is occupied the agent **will attempt to kill** the process using that port and restart Storybook on port **6006** (force-retries once). This ensures Storybook is always available on the canonical port for discovery and testing.
+
 ## 🛡️ SAFETY RULES
 1. **Never Hallucinate Paths:** Use `explore_file_tree` or `search_code` before reading files.
 2. **Tests First:** Do not open a PR if `run_tests` fails.

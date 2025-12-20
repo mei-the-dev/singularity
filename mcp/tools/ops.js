@@ -5,9 +5,45 @@ import net from 'net';
 
 const killPort = (port) => {
     try {
-        const pid = execSync(`lsof -t -i:${port}`, {encoding:'utf8'}).trim();
-        if(pid) { process.kill(pid); }
-    } catch(e) {}
+        // Primary: use lsof to find PIDs
+        let pids = [];
+        try {
+            const out = execSync(`lsof -t -i:${port}`, {encoding:'utf8'}).trim();
+            if (out) pids = out.split(/\s+/).filter(Boolean);
+        } catch(e) { /* no lsof or no results */ }
+
+        // Fallback: try fuser to kill processes (many systems provide this)
+        if (!pids.length) {
+            try {
+                execSync(`fuser -k ${port}/tcp`, {stdio: 'ignore'});
+                // fuser kills directly; try lsof again to see if any remain
+                const out2 = execSync(`lsof -t -i:${port}`, {encoding:'utf8'}).trim();
+                if (out2) pids = out2.split(/\s+/).filter(Boolean);
+            } catch(e) { /* ignore */ }
+        }
+
+        // Fallback: try ss and parse PID if available
+        if (!pids.length) {
+            try {
+                const ssOut = execSync(`ss -ltnp 2>/dev/null | grep -E ":${port}\\b" || true`, {encoding:'utf8'}).trim();
+                const m = ssOut.match(/pid=(\d+),/);
+                if (m) pids.push(m[1]);
+            } catch(e) { /* ignore */ }
+        }
+
+        if (pids.length) {
+            for (const pid of pids) {
+                try { process.kill(parseInt(pid, 10), 'SIGTERM'); } catch(e) {}
+            }
+            // Give processes a moment, then force-kill any remaining
+            try { execSync('sleep 0.3'); } catch(e) {}
+            for (const pid of pids) {
+                try { process.kill(parseInt(pid, 10), 'SIGKILL'); } catch(e) {}
+            }
+            return true;
+        }
+    } catch(e) { /* best-effort, ignore */ }
+    return false;
 };
 
 export const startService = async ({ command, port }) => {
@@ -41,10 +77,29 @@ const waitForPort = async (port, ms = 10000, interval = 250) => {
 };
 
 export const startServiceWithHealth = async ({ command, port, name }) => {
+    // Ensure port is free before starting service
+    if (port) {
+        try { killPort(port); } catch(e) {}
+    }
+
     const svc = await startService({ command, port });
+
     let healthy = true;
     if (port) {
         healthy = await waitForPort(port, 15000);
+        // If not healthy, attempt kill & retry once (force port free and restart)
+        if (!healthy) {
+            try {
+                const killed = killPort(port);
+                if (killed) {
+                    // restart
+                    await startService({ command, port });
+                    healthy = await waitForPort(port, 10000);
+                }
+            } catch (e) {
+                /* ignore and return unhealthy */
+            }
+        }
     }
     return { ...svc, healthy };
 };
