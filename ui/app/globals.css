@@ -3,12 +3,29 @@
 @tailwind utilities;
 
 :root {
+  /* Core palette (Void & Gold) */
   --bg: #040407; /* space black */
   --panel: rgba(14, 12, 15, 0.6);
+  --panel-contrast: rgba(255,255,255,0.04);
   --gold: #D4AF37;
   --gold-dim: rgba(212,175,55,0.12);
+  --gold-subtle: rgba(212,175,55,0.06);
+
+  /* Accents & semantic colors */
   --accent: #00f0ff;
   --accent-dim: #00f0ff20;
+  --muted: #9aa3b2;
+  --success: #1db954;
+  --warning: #ffb86b;
+  --danger: #ff6b6b;
+
+  /* Motion tokens */
+  --motion-duration-short: 140ms;
+  --motion-duration-medium: 240ms;
+  --motion-easing: cubic-bezier(0.2, 0.9, 0.2, 1);
+
+  /* Accessibility helpers */
+  --focus-ring: 4px;
 }
 body { background: var(--bg); color: #fff; overflow: hidden; font-family: 'Inter', sans-serif; }
 
