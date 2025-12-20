@@ -17,8 +17,16 @@ const meta: Meta<typeof IssueCard> = {
   title: 'Molecules/IssueCard',
   component: IssueCard,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component: 'Compact issue card used on boards; supports `onClick` to open details.'
+      }
+    }
+  },
   argTypes: {
-    issue: { control: false }
+    issue: { control: false },
+    onClick: { action: 'clicked' }
   }
 };
 
@@ -27,3 +35,4 @@ export default meta;
 type Story = StoryObj<typeof IssueCard>;
 
 export const Default: Story = { args: { issue: sample } };
+export const Interactive: Story = { args: { issue: sample } };
