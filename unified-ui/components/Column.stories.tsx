@@ -1,6 +1,18 @@
-// Migrated from beta_ui_test2
-// ...story code...
-export default {
-	title: 'Column',
-	component: require('./Column').default || require('./Column'),
+import { Meta, StoryObj } from '@storybook/react-vite';
+import Column from './Column';
+
+const meta: Meta<typeof Column> = {
+	title: 'Environment/Column',
+	component: Column,
+	parameters: {
+		layout: 'fullscreen',
+	},
+	tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+	args: {},
 };

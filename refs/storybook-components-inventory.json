@@ -1,0 +1,36 @@
+[
+  {
+    "id": "environment-blackholebackground",
+    "title": "Environment/BlackholeBackground",
+    "stories": [
+      { "id": "environment-blackholebackground--docs", "name": "Docs", "type": "docs", "importPath": "./components/BlackholeBackground/BlackholeBackground.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "environment-blackholebackground--idle", "name": "Idle", "type": "story", "importPath": "./components/BlackholeBackground/BlackholeBackground.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "environment-blackholebackground--interactive", "name": "Interactive", "type": "story", "importPath": "./components/BlackholeBackground/BlackholeBackground.stories.tsx", "tags": ["dev","test","autodocs"] }
+    ]
+  },
+  {
+    "id": "board-blackholeboard",
+    "title": "Board/BlackholeBoard",
+    "stories": [
+      { "id": "board-blackholeboard--docs", "name": "Docs", "type": "docs", "importPath": "./components/BlackholeBoard/BlackholeBoard.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "board-blackholeboard--default", "name": "Default", "type": "story", "importPath": "./components/BlackholeBoard/BlackholeBoard.stories.tsx", "tags": ["dev","test","autodocs"] }
+    ]
+  },
+  {
+    "id": "molecules-issuecard",
+    "title": "Molecules/IssueCard",
+    "stories": [
+      { "id": "molecules-issuecard--docs", "name": "Docs", "type": "docs", "importPath": "./components/IssueCard/IssueCard.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "molecules-issuecard--default", "name": "Default", "type": "story", "importPath": "./components/IssueCard/IssueCard.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "molecules-issuecard--interactive", "name": "Interactive", "type": "story", "importPath": "./components/IssueCard/IssueCard.stories.tsx", "tags": ["dev","test","autodocs"] }
+    ]
+  },
+  {
+    "id": "molecules-issuedetailmodal",
+    "title": "Molecules/IssueDetailModal",
+    "stories": [
+      { "id": "molecules-issuedetailmodal--docs", "name": "Docs", "type": "docs", "importPath": "./components/IssueDetailModal/IssueDetailModal.stories.tsx", "tags": ["dev","test","autodocs"] },
+      { "id": "molecules-issuedetailmodal--default", "name": "Default", "type": "story", "importPath": "./components/IssueDetailModal/IssueDetailModal.stories.tsx", "tags": ["dev","test","autodocs"] }
+    ]
+  }
+]
