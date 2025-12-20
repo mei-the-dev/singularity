@@ -5,7 +5,7 @@ Use `npm run start-dev` or the agent `/start-dev` starter to start a full develo
 - Starts `docker compose up -d` if Docker is available
 - Starts Storybook (port 6006)
 - Starts the app (Next dev server, port 3000)
-- Ensures Playwright dependencies are installed
+- Ensures Playwright dependencies are installed or available via Docker (preferred). If Docker is available, Playwright tests run inside the Playwright container so browsers need not be installed locally.
 
 Why:
 - Ensures Storybook is always available on port 6006 for MCP discovery and Playwright tests

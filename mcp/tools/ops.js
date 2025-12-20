@@ -139,10 +139,27 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
         results.app = await startServiceWithHealth({ command: 'npm run dev --prefix ui', port: 3000, name: 'app' });
     } catch(e) { results.app = { ok: false, error: e.message } }
 
-    // 4) Ensure Playwright installed (best-effort)
+    // 4) Ensure Playwright is available. Prefer Docker to run/playwright where browsers are preinstalled.
     try {
-        execSync('npx playwright install --with-deps', { stdio: 'ignore' });
-        results.playwright = { ok: true };
+        // If Docker is available, run a lightweight playwright check inside the official image (no local host install required)
+        try {
+            execSync('docker info', { stdio: 'ignore' });
+            // Try to use an official Playwright image to check browsers are available. This will pull image if needed.
+            // Use the image tag that matches the repo playwright version loosely.
+            const image = 'mcr.microsoft.com/playwright:v1';
+            try {
+                // Run playwright --version inside container to validate tooling and browsers
+                execSync(`docker run --rm -v "${process.cwd()}:/work" -w /work ${image} npx playwright --version`, { stdio: 'ignore', timeout: 120000 });
+                results.playwright = { ok: true, via: 'docker', image };
+            } catch (e) {
+                // If docker run failed, mark as not ok but include error
+                results.playwright = { ok: false, via: 'docker', error: e.message };
+            }
+        } catch (e) {
+            // Docker not available: fallback to local install
+            execSync('npx playwright install --with-deps', { stdio: 'ignore' });
+            results.playwright = { ok: true, via: 'local' };
+        }
     } catch(e) { results.playwright = { ok: false, error: e.message } }
 
     // 5) Final health summary
