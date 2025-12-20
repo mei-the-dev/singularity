@@ -73,12 +73,51 @@ export const getDiff = async () => {
 };
 
 export const startTask = async ({ issue_id }) => {
+    // Execute git commands explicitly against MCP_REPO_OVERRIDE when present to avoid ambiguity
+    const targetRepo = process.env.MCP_REPO_OVERRIDE || REPO_ROOT;
     try {
-        runShell('git stash');
-        runShell('git checkout main');
-        runShell('git pull');
-        runShell(`git checkout -b task/issue-${issue_id}`);
-    } catch(e) {}
-    writeContext({ currentTask: issue_id, status: "in-progress" });
+        runSafe('git', ['-C', targetRepo, 'stash']);
+
+        // Determine default branch robustly
+        let defaultBranch = 'main';
+        try {
+            const out = runSafe('git', ['-C', targetRepo, 'rev-parse', '--abbrev-ref', 'origin/HEAD']);
+            if (out) defaultBranch = out.replace('origin/', '');
+        } catch (e) {
+            try {
+                const out2 = runSafe('git', ['-C', targetRepo, 'rev-parse', '--abbrev-ref', 'HEAD']);
+                if (out2 && out2 !== 'HEAD') defaultBranch = out2;
+                else {
+                    const out3 = runSafe('git', ['-C', targetRepo, 'branch', '--show-current']);
+                    if (out3) defaultBranch = out3;
+                    else {
+                        for (const b of ['main', 'master']) {
+                            try { runSafe('git', ['-C', targetRepo, 'rev-parse', '--verify', b]); defaultBranch = b; break; } catch (e2) {}
+                        }
+                    }
+                }
+            } catch (e2) { /* keep default */ }
+        }
+
+        runSafe('git', ['-C', targetRepo, 'checkout', defaultBranch]);
+        try { runSafe('git', ['-C', targetRepo, 'pull']); } catch(e) { /* ignore pull errors for local-only repos */ }
+
+        // Create the task branch, or checkout if it exists
+        try {
+            runSafe('git', ['-C', targetRepo, 'checkout', '-b', `task/issue-${issue_id}`]);
+        } catch (e) {
+            try { runSafe('git', ['-C', targetRepo, 'checkout', `task/issue-${issue_id}`]); } catch (e2) { return { error: e.message }; }
+        }
+
+        // Write context directly into target repo to ensure deterministic tests
+        try {
+            const ctxPath = path.join(targetRepo, '.task-context');
+            fs.mkdirSync(ctxPath, { recursive: true });
+            fs.writeFileSync(path.join(ctxPath, 'active.json'), JSON.stringify({ currentTask: issue_id, status: 'in-progress' }, null, 2));
+        } catch (e) { /* best-effort, ignore */ }
+
+    } catch(e) {
+        return { error: e.message };
+    }
     return { msg: `Switched context to issue #${issue_id}` };
 };
