@@ -28,11 +28,14 @@ jobs:
           key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-browsers-
-      - name: Install dependencies (including dev)
+      - name: Install dependencies (including dev, capture logs)
         run: |
-          NODE_ENV=development npm --prefix ui install --no-audit --prefer-offline --include=dev
+          mkdir -p ui/logs
+          NODE_ENV=development npm --prefix ui install --no-audit --prefer-offline --include=dev > ui/logs/npm-install.log 2>&1 || (echo "npm install failed - printing tail" && sed -n '1,300p' ui/logs/npm-install.log && false)
+          echo "Debug: first lines of npm install log:"
+          sed -n '1,40p' ui/logs/npm-install.log || true
           echo "Debug: tools in ui/node_modules/.bin"
-          ls -la ui/node_modules/.bin || true
+          ls -la ui/node_modules/.bin | head -n 80 || true
       - name: Build Next app (fallback for E2E)
         run: npm --prefix ui run build
       - name: Start Next app
