@@ -7,7 +7,7 @@ set -euo pipefail
 WORKDIR="$(pwd)"
 TEST_PATH="${1:-ui/e2e/tests}"
 PROJECT="${2:-chromium}"
-IMAGE="mcr.microsoft.com/playwright:latest"
+IMAGE="${PLAYWRIGHT_DOCKER_IMAGE:-mcr.microsoft.com/playwright:v1.57.0-jammy}"
 
 echo "Running Playwright tests inside Docker image ${IMAGE}"
 

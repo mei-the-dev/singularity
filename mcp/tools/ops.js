@@ -143,7 +143,7 @@ export const startDevelopmentSession = async ({ skipDocker=false, runPlaywright=
     try {
         try {
             execSync('docker info', { stdio: 'ignore' });
-            const image = 'mcr.microsoft.com/playwright:latest';
+            const image = process.env.PLAYWRIGHT_DOCKER_IMAGE || 'mcr.microsoft.com/playwright:v1.57.0-jammy';
             try {
                 // Validate the image & Playwright install inside container
                 execSync(`docker run --rm -v "${process.cwd()}:/work" -w /work ${image} npx playwright --version`, { stdio: 'ignore', timeout: 120000 });
@@ -160,7 +160,7 @@ export const startDevelopmentSession = async ({ skipDocker=false, runPlaywright=
         // Optionally run Playwright tests inside Docker when explicitly requested
         if (runPlaywright && results.playwright && results.playwright.via === 'docker' && results.storybook && results.storybook.healthy) {
             try {
-                const image = results.playwright.image || 'mcr.microsoft.com/playwright:latest';
+                const image = results.playwright.image || process.env.PLAYWRIGHT_DOCKER_IMAGE || 'mcr.microsoft.com/playwright:v1.57.0-jammy';
                 try { execSync('mkdir -p ui/e2e/tests/baselines'); } catch(e) {}
                 execSync(`docker run --rm --network host -v "${process.cwd()}:/work" -w /work ${image} bash -lc \"export STORYBOOK_URL=http://localhost:6006 && npx playwright test ui/e2e/tests --project=chromium --config=playwright.config.js --reporter=list\"`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
                 results.playwrightRun = { ok: true, via: 'docker' };
@@ -185,9 +185,9 @@ export const checkServices = async ({ ports = [6006, 3000] } = {}) => {
 
 export const runPlaywrightInDocker = async ({ testsPath = 'ui/e2e/tests', project = 'chromium' } = {}) => {
     try {
-        const image = 'mcr.microsoft.com/playwright:latest';
+        const image = process.env.PLAYWRIGHT_DOCKER_IMAGE || 'mcr.microsoft.com/playwright:v1.57.0-jammy';
         execSync(`mkdir -p ui/e2e/tests/baselines`);
-        execSync(`./bin/playwright-docker.sh ${testsPath} ${project}`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
+        execSync(`PLAYWRIGHT_DOCKER_IMAGE=${image} ./bin/playwright-docker.sh ${testsPath} ${project}`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
         return { ok: true };
     } catch (e) { return { ok: false, error: e.message }; }
 };
