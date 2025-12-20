@@ -20,3 +20,4 @@ Notes:
 
 CI: Added debug listing of ui/node_modules/.bin to help diagnose 'storybook: command not found' failures.
 - CI: Use Playwright action to set up browsers reliably in CI (preferred fallback to Docker).
+- CI: Add readiness check and capture Playwright test logs + HTML report for easier debugging.
