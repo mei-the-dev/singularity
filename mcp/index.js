@@ -25,7 +25,18 @@ const TOOLS = [
 
   { name: "search_code", handler: Files.searchCode, schema: { type: "object", properties: { query:{type:"string"} }, required:["query"] } },
   { name: "explore_file_tree", handler: Files.exploreTree, schema: { type: "object", properties: { path:{type:"string"} } } },
-  { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } }
+  { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } },
+
+  // Storybook MCP adapter tools
+  { name: "storybook_list_components", handler: async ({ baseUrl }) => (await import('./tools/storybook_adapter.js')).listComponents(baseUrl), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+  { name: "storybook_get_component_doc", handler: async ({ componentId, baseUrl }) => (await import('./tools/storybook_adapter.js')).getComponentDocumentation(componentId, baseUrl), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } },
+  { name: "storybook_list_tools", handler: async ({ baseUrl }) => (await import('./tools/storybook_adapter.js')).listTools(baseUrl), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+
+  // Official MCP-like Storybook tools
+  { name: "get_ui_building_instructions", handler: async () => (await import('./tools/get-ui-building-instructions.js')).getUiBuildingInstructions(), schema: { type: "object", properties: {} } },
+  { name: "get_story_urls", handler: async ({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }) => (await import('./tools/get-story-urls.js')).getStoryUrls({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }), schema: { type: "object", properties: { absoluteStoryPath:{type:"string"}, exportName:{type:"string"}, explicitStoryName:{type:"string"}, baseUrl:{type:"string"} }, required:["absoluteStoryPath","exportName"] } },
+  { name: "list-all-components", handler: async ({ baseUrl }) => (await import('./tools/list-all-components.js')).listAllComponents({ baseUrl }), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+  { name: "get-component-documentation", handler: async ({ componentId, baseUrl }) => (await import('./tools/get-component-documentation.js')).getComponentDocumentation({ componentId, baseUrl }), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } }
 ];
 
 const server = new Server({ name: "singularity-core", version: "21.0.0" }, { capabilities: { tools: {} } });

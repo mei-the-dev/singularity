@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation "Global" [ref=e6]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - link "Skip to canvas" [ref=e13] [cursor=pointer]:
+            - /url: "#storybook-preview-wrapper"
+          - link "Storybook" [ref=e15] [cursor=pointer]:
+            - /url: ./
+            - img "Storybook" [ref=e16]
+          - switch "Settings" [ref=e21] [cursor=pointer]:
+            - img [ref=e22]
+        - generic [ref=e27]:
+          - generic [ref=e29] [cursor=pointer]:
+            - button "Open onboarding guide" [ref=e33]:
+              - img [ref=e35]
+              - strong [ref=e37]: Get started
+            - generic [ref=e38]:
+              - button "Collapse onboarding checklist" [expanded] [ref=e39]:
+                - img [ref=e40]
+              - button "0% completed" [ref=e42]:
+                - generic [ref=e43]:
+                  - img [ref=e44]
+                  - img [ref=e46]
+                - generic [ref=e49]: 0%
+          - list [ref=e51]:
+            - listitem [ref=e52]:
+              - button "Open onboarding guide for Render your first component" [ref=e53] [cursor=pointer]:
+                - img [ref=e55]
+                - generic [ref=e58]: Render your first component
+            - listitem [ref=e59]:
+              - button "Open onboarding guide for Change a story with Controls" [ref=e60] [cursor=pointer]:
+                - img [ref=e62]
+                - generic [ref=e65]: Change a story with Controls
+            - listitem [ref=e66]:
+              - button "Open onboarding guide for Install Vitest addon" [ref=e67] [cursor=pointer]:
+                - img [ref=e69]
+                - generic [ref=e72]: Install Vitest addon
+      - generic [ref=e73]: Search for components
+      - generic [ref=e74]:
+        - combobox "Search for components" [ref=e75]:
+          - generic:
+            - img
+          - searchbox "Search for components" [ref=e76]
+          - code: ⌃ K
+          - button "Tag filters" [ref=e78] [cursor=pointer]:
+            - img [ref=e79]
+        - button "Create a new story" [ref=e81] [cursor=pointer]:
+          - img [ref=e82]
+      - generic [ref=e88]:
+        - img
+        - generic [ref=e89]:
+          - button "Collapse" [expanded] [ref=e90] [cursor=pointer]:
+            - img [ref=e92]
+            - text: Board
+          - button "Collapse all" [ref=e94] [cursor=pointer]:
+            - img [ref=e95]
+        - button "BlackholeBoard" [expanded] [ref=e98] [cursor=pointer]:
+          - generic [ref=e99]:
+            - img [ref=e101]
+            - img [ref=e103]
+          - text: BlackholeBoard
+        - link "Docs" [ref=e106] [cursor=pointer]:
+          - /url: /?path=/docs/board-blackholeboard--docs
+          - img [ref=e108]
+          - text: Docs
+        - generic [ref=e110]:
+          - button "Default" [ref=e111] [cursor=pointer]:
+            - img [ref=e113]
+            - text: Default
+          - link "Skip to canvas" [ref=e115] [cursor=pointer]:
+            - /url: "#storybook-preview-wrapper"
+  - main [ref=e117]:
+    - region "Toolbar" [ref=e118]:
+      - heading "Toolbar" [level=2] [ref=e119]
+      - toolbar [ref=e120]:
+        - generic [ref=e121]:
+          - button "Reload story" [ref=e122] [cursor=pointer]:
+            - img [ref=e123]
+          - button "Zoom in" [ref=e125] [cursor=pointer]:
+            - img [ref=e126]
+          - button "Zoom out" [ref=e129] [cursor=pointer]:
+            - img [ref=e130]
+          - button "Reset zoom" [ref=e133] [cursor=pointer]:
+            - img [ref=e134]
+          - switch "Measure tool" [ref=e137] [cursor=pointer]:
+            - img [ref=e138]
+          - switch "Outline tool" [ref=e141] [cursor=pointer]:
+            - img [ref=e142]
+          - button "Viewport size" [ref=e144] [cursor=pointer]:
+            - img [ref=e145]
+        - generic [ref=e149]:
+          - button "Enter full screen" [ref=e150] [cursor=pointer]:
+            - img [ref=e151]
+          - button "Share" [ref=e153] [cursor=pointer]:
+            - img [ref=e154]
+          - button "Open in editor" [ref=e157] [cursor=pointer]:
+            - img [ref=e158]
+    - region "Main preview area" [ref=e161]:
+      - heading "Main preview area" [level=2] [ref=e162]
+      - generic [ref=e163]:
+        - progressbar "Content is loading..." [ref=e165]
+        - generic [ref=e166]:
+          - link "Skip to sidebar" [ref=e167] [cursor=pointer]:
+            - /url: "#board-blackholeboard--default"
+          - iframe [ref=e168]:
+            
+  - region "Addon panel" [ref=e171]:
+    - heading "Addon panel" [level=2] [ref=e172]
+    - generic [ref=e173]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - button "Move addon panel to right" [ref=e176] [cursor=pointer]:
+            - img [ref=e177]
+          - button "Hide addon panel" [ref=e180] [cursor=pointer]:
+            - img [ref=e181]
+        - tablist "Available addons" [ref=e186]:
+          - tab "Controls" [selected] [ref=e187] [cursor=pointer]:
+            - generic [ref=e189]: Controls
+          - tab "Actions" [ref=e190] [cursor=pointer]:
+            - generic [ref=e192]: Actions
+          - tab "Interactions" [ref=e193] [cursor=pointer]:
+            - generic [ref=e195]: Interactions
+      - tabpanel "Controls" [ref=e196]
+```
