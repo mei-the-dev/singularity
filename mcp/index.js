@@ -6,8 +6,15 @@ import * as Ops from './tools/ops.js';
 import * as Git from './tools/git.js';
 import * as Files from './tools/files.js';
 
-// Import new scaffold tools
-import { registerScaffoldComponent, registerGenerateStoryTest } from './tools/scaffold/index.js';
+// Import new scaffold tools (conditionally)
+import fs from 'fs';
+let registerScaffoldComponent = () => {};
+let registerGenerateStoryTest = () => {};
+if (fs.existsSync(new URL('./tools/scaffold/index.js', import.meta.url))) {
+  const scaffold = await import('./tools/scaffold/index.js');
+  registerScaffoldComponent = scaffold.registerScaffoldComponent;
+  registerGenerateStoryTest = scaffold.registerGenerateStoryTest;
+}
 
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
@@ -45,7 +52,7 @@ const TOOLS = [
   { name: "get_ui_building_instructions", handler: async () => (await import('./tools/get-ui-building-instructions.js')).getUiBuildingInstructions(), schema: { type: "object", properties: {} } },
   { name: "get_story_urls", handler: async ({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }) => (await import('./tools/get-story-urls.js')).getStoryUrls({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }), schema: { type: "object", properties: { absoluteStoryPath:{type:"string"}, exportName:{type:"string"}, explicitStoryName:{type:"string"}, baseUrl:{type:"string"} }, required:["absoluteStoryPath","exportName"] } },
   { name: "list-all-components", handler: async ({ baseUrl }) => (await import('./tools/list-all-components.js')).listAllComponents({ baseUrl }), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
-  { name: "get-component-documentation", handler: async ({ componentId, baseUrl }) => (await import('./tools/get-component-documentation.js')).getComponentDocumentation({ componentId, baseUrl }), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } }
+{ name: "get-component-documentation", description: "Fetches detailed docs (HTML) for a specific component ID from Storybook MCP", handler: async ({ componentId, baseUrl }) => (await import('./tools/get-component-documentation.js')).getComponentDocumentation({ componentId, baseUrl }), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"}, }, required:["componentId"] } }
 ];
 
 // Register new scaffold tools (TypeScript codegen and test injection)
@@ -58,6 +65,10 @@ const mockServer = {
 registerScaffoldComponent(mockServer);
 registerGenerateStoryTest(mockServer);
 scaffoldTools.forEach(t => TOOLS.push({ name: t.name, handler: t.handler, schema: t.schema }));
+
+// Helpful startup logs
+console.log('MCP: registering tools:', TOOLS.map(t => t.name).join(', '));
+console.log('MCP: starting up at', new Date().toISOString());
 
 const server = new Server({ name: "singularity-core", version: "21.0.0" }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS.map(t => ({ name: t.name, inputSchema: t.schema })) }));

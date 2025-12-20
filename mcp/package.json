@@ -9,6 +9,6 @@
     "jest": "^29.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0"
+    "@modelcontextprotocol/sdk": "^0.6.1"
   }
 }

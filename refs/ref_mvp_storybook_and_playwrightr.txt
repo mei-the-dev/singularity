@@ -1,0 +1,224 @@
+This is a tailored setup for **Omarchy** (Arch Linux + Hyprland).
+
+Since Omarchy is an opinionated Arch-based distro using the Hyprland tiling window manager, this guide addresses specific quirks you might encounter—like how Playwright's browser windows interact with tiling, and installing the correct VS Code version from the AUR to ensure the Playwright extension works.
+
+### Phase 1: Omarchy System Prep
+
+On Arch/Omarchy, you have two VS Code options. I strongly recommend the **official Microsoft binary** (`visual-studio-code-bin`) over the open-source build (`code`) because the official **Playwright VS Code extension** often has issues with the OSS version.
+
+1. **Install Node & Git (if missing):**
+```bash
+sudo pacman -S nodejs npm git base-devel
+
+```
+
+
+2. **Install VS Code (Official Bin) via AUR:**
+If you haven't installed it yet, use `yay` (or your preferred AUR helper):
+```bash
+yay -S visual-studio-code-bin
+
+```
+
+
+3. **Create Your Project Folder:**
+```bash
+mkdir ~/Dev/storywright-mvp
+cd ~/Dev/storywright-mvp
+
+```
+
+
+
+---
+
+### Phase 2: Scaffolding the Stack
+
+We will use **Vite** for the build tool, **React** for the UI, **Storybook** for the component workshop, and **Playwright** for testing.
+
+1. **Initialize Vite (React + TypeScript):**
+```bash
+npm create vite@latest . -- --template react-ts
+npm install
+
+```
+
+
+2. **Initialize Storybook:**
+This automates the setup and detects Vite.
+```bash
+npx storybook@latest init
+
+```
+
+
+3. **Initialize Playwright:**
+```bash
+npm init playwright@latest
+
+```
+
+
+* **TypeScript:** Yes
+* **Tests folder:** `tests`
+* **Install Playwright browsers:** Yes
+* **Install OS dependencies:** **YES** (Crucial on Arch/Omarchy to pull necessary libraries like `libnss`, `nspr`, etc.)
+
+
+
+---
+
+### Phase 3: The "Magic" Config (Storybook x Playwright)
+
+To test your components, Playwright needs to spin up Storybook automatically.
+
+**Modify `playwright.config.ts`:**
+Replace the `webServer` section and `use` section with this configuration. This points Playwright to Storybook's iframe (stripping the sidebar UI for clean testing).
+
+```typescript
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: true,
+  reporter: 'html',
+  
+  // 1. Point Playwright to Storybook
+  use: {
+    baseURL: 'http://localhost:6006',
+    trace: 'on-first-retry',
+  },
+
+  // 2. Auto-start Storybook before tests run
+  webServer: {
+    command: 'npm run storybook',
+    url: 'http://localhost:6006',
+    reuseExistingServer: !process.env.CI, // Great for local dev
+    stdout: 'ignore',
+    stderr: 'pipe',
+  },
+
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  ],
+});
+
+```
+
+---
+
+### Phase 4: Create a Component & Test
+
+Let's build a "Button" and test it.
+
+**1. Create `src/components/Button.tsx`:**
+
+```tsx
+export const Button = ({ label, primary = false }: { label: string; primary?: boolean }) => (
+  <button style={{ 
+      backgroundColor: primary ? '#1ea7fd' : 'transparent',
+      color: primary ? 'white' : '#333',
+      padding: '10px 20px',
+      border: '1px solid #ccc',
+      borderRadius: '3em',
+      cursor: 'pointer'
+  }}>
+    {label}
+  </button>
+);
+
+```
+
+**2. Create `src/components/Button.stories.tsx`:**
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+const meta = {
+  component: Button,
+  title: 'Components/Button',
+} satisfies Meta<typeof Button>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = { args: { label: 'Primary', primary: true } };
+export const Secondary: Story = { args: { label: 'Secondary', primary: false } };
+
+```
+
+**3. Create `tests/button.spec.ts`:**
+Note the URL pattern: `/iframe.html?id=components-button--primary`. This loads *only* the component, avoiding Storybook's UI from interfering with screenshots.
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('Button renders correctly', async ({ page }) => {
+  // Navigate to the isolated story
+  await page.goto('/iframe.html?id=components-button--primary&viewMode=story');
+
+  const button = page.getByRole('button', { name: 'Primary' });
+  
+  // Functional check
+  await expect(button).toBeVisible();
+  
+  // Visual check (Snapshot)
+  await expect(page).toHaveScreenshot('button-primary.png');
+});
+
+```
+
+---
+
+### Phase 5: The VS Code on Omarchy Setup
+
+This is where the user experience gets really good.
+
+1. **Install the Extension:**
+Open VS Code extensions (`Ctrl+Shift+X`) and install **"Playwright Test for VSCode"** (by Microsoft).
+2. **Enable the "Testing" Sidebar:**
+You should now see a Beaker icon in the sidebar. Click it. You will see your `button.spec.ts`.
+3. **Run in VS Code:**
+* Click the "Play" button next to the test.
+* **Note for Hyprland Users:** Since you are on a tiling window manager, if you run tests with "Show Browser" enabled, the browser window might tile aggressively.
+* **Fix:** In the Playwright extension settings (or bottom left panel), ensure **"Show Browser"** is unchecked for general runs. Only check it when debugging. When it *does* open, Hyprland will tile it next to VS Code, which is actually quite nice for side-by-side debugging!
+
+
+
+---
+
+### Phase 6: Running the MVP
+
+**Terminal Method:**
+
+```bash
+# Runs tests headless (best for CI/fast checks)
+npx playwright test
+
+# Updates snapshots if you change styles
+npx playwright test --update-snapshots
+
+```
+
+**VS Code Method:**
+
+1. Open `tests/button.spec.ts`.
+2. Click the green triangle in the gutter next to the test.
+3. VS Code will launch Storybook in the background and run the test.
+
+### Hyprland Specific Tip
+
+If you find Playwright's browser windows are capturing focus or tiling weirdly during "headed" mode debug sessions, you can add a window rule to your Hyprland config (`~/.config/hypr/hyprland.conf`) to make them float:
+
+```ini
+# Float Playwright browsers
+windowrule = float, title:^(Playwright)(.*)$
+
+```
+
+### Would you like me to...
+
+1. Add a **GitHub Actions** file to run these tests automatically?
+2. Set up **Axe (Accessibility)** tests to run inside these Playwright specs?
+3. Create a **VS Code Task** to launch Storybook and Playwright UI side-by-side?

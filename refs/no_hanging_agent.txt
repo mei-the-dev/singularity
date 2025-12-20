@@ -1,0 +1,119 @@
+Here are the system instructions and a technical protocol designed to prevent AI agents from hanging on long-running processes (like servers).
+
+You can inject this into your agent's system prompt or tool definition.
+
+### 🤖 System Instruction: The "Non-Blocking" Protocol
+
+**Role Definition:**
+When you encounter a command intended to start a long-running service (e.g., `npm start`, `npm run dev`, `docker compose up`, `uvicorn`, `python manage.py runserver`), **DO NOT** run it synchronously. Doing so will freeze your execution thread and cause a timeout.
+
+**Protocol:**
+Instead, you must execute the command in a **Detached State** using the following lifecycle:
+
+1. **Background & Redirect:** Run the command in the background (`&`) and redirect both standard output (`stdout`) and standard error (`stderr`) to a dedicated log file.
+2. **Verify & Wait:** Do not assume the server is ready immediately. Monitor the log file or the local port until you see a "success signal" (e.g., "Listening on port 3000").
+3. **Return Control:** Once the success signal is confirmed, report the status and the Process ID (PID) to the user, then stop waiting. **Do not wait for the process to exit.**
+
+---
+
+### 🛠 Technical Implementation (Shell/Bash)
+
+Here are the specific command patterns the agent should use to execute this protocol.
+
+#### 1. The Execution Command
+
+Instead of running `npm start`, the agent should run:
+
+```bash
+# Syntax: nohup [COMMAND] > [LOG_FILE] 2>&1 & echo $!
+nohup npm start > server.log 2>&1 & echo $!
+
+```
+
+* **`nohup`**: Prevents the process from being killed if the shell session closes (optional but safer).
+* **`> server.log`**: Redirects standard output to a file so the agent can read it later.
+* **`2>&1`**: Redirects error logs to the same file.
+* **`&`**: Puts the process in the background immediately.
+* **`echo $!`**: Prints the **PID** (Process ID). The agent **MUST** capture and store this ID to kill the server later.
+
+#### 2. The Verification Loop (The "Smart Wait")
+
+The agent should not just sleep; it should actively check for life. It can run a loop like this immediately after the start command:
+
+```bash
+# Wait up to 30 seconds for the server to say "localhost" or "Ready"
+timeout=30
+while [ $timeout -gt 0 ]; do
+    if grep -q "localhost" server.log; then
+        echo "Server is UP!"
+        exit 0
+    fi
+    sleep 1
+    ((timeout--))
+done
+echo "Server timed out checking logs."
+exit 1
+
+```
+
+*Alternatively, use `wait-on` if available:*
+
+```bash
+npx wait-on http://localhost:3000 && echo "Server is UP"
+
+```
+
+#### 3. Reading Logs (Debugging)
+
+If the user asks "Is the server okay?" or "What's the error?", the agent should run:
+
+```bash
+# Read the last 20 lines of the log
+tail -n 20 server.log
+
+```
+
+#### 4. The Cleanup (Crucial)
+
+Agents often forget to clean up, leading to "Port 3000 already in use" errors on the next run. The agent must have a teardown step:
+
+```bash
+# Kill the specific PID captured earlier
+kill [PID]
+
+# OR (Brute force if PID was lost - use with caution)
+pkill -f "npm start"
+
+```
+
+---
+
+### 📝 Example Conversation Flow
+
+**User:** "Start the React app for me."
+
+**Agent (Internal Monologue):**
+
+> *User wants to run `npm start`. This is a blocking command. I must apply the Non-Blocking Protocol.*
+
+**Agent Action (Tool Use):**
+
+```bash
+nohup npm start > app.log 2>&1 & echo $!
+
+```
+
+*(Agent captures PID: 12345)*
+
+**Agent Action (Tool Use):**
+
+```bash
+# Checking logs for 5 seconds to ensure startup
+sleep 5 && tail -n 10 app.log
+
+```
+
+*(Agent reads "Local: http://localhost:3000" in the logs)*
+
+**Agent Response:**
+"I've started the React app in the background (PID: 12345). It is successfully running at http://localhost:3000. I am logging output to `app.log`."

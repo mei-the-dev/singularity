@@ -76,7 +76,7 @@ STORYBOOK_URL=http://localhost:9001 npx playwright test ui/e2e/tests --project=c
 ## Repository layout
 Top-level directories and purpose:
 - `mcp/` — MCP server, tools, registrations, and tests.
-- `ui/` — Frontend application, components, Storybook config, and E2E tests.
+- `ui/` — Canonical frontend application, components, Storybook config, and E2E tests. This is the single source of truth for UI development and testing; other UI folders (e.g., `beta_ui_test2`, `unified-ui`) have been archived after consolidation.
 - `bin/` — Scripts and helpers for starting services.
 - `scripts/` — Utility scripts for setup and CI.
 - `refs/` — Design notes, drafts, and references.

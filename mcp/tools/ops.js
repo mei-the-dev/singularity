@@ -3,6 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import net from 'net';
 
+// Determine repository root (assume two levels up from tools dir)
+const REPO_ROOT = path.resolve(new URL('.', import.meta.url).pathname, '..', '..');
+
+
 const killPort = (port) => {
     try {
         // Primary: use lsof to find PIDs
@@ -51,7 +55,7 @@ export const startService = async ({ command, port }) => {
     const logFile = path.resolve(process.cwd(), '.task-context', 'logs', `svc_${port || 'na'}.log`);
     fs.mkdirSync(path.dirname(logFile), {recursive:true});
     const out = fs.openSync(logFile, 'w');
-    const proc = spawn(command, { detached: true, stdio: ['ignore', out, out], shell: true });
+    const proc = spawn(command, { detached: true, stdio: ['ignore', out, out], shell: true, cwd: REPO_ROOT });
     proc.unref();
     return { msg: `Service Online (PID ${proc.pid})`, log: logFile, pid: proc.pid };
 };
@@ -76,7 +80,7 @@ const waitForPort = async (port, ms = 10000, interval = 250) => {
     return false;
 };
 
-export const startServiceWithHealth = async ({ command, port, name }) => {
+export const startServiceWithHealth = async ({ command, port, name, timeout = 15000 } = {}) => {
     // Ensure port is free before starting service
     if (port) {
         try { killPort(port); } catch(e) {}
@@ -86,7 +90,7 @@ export const startServiceWithHealth = async ({ command, port, name }) => {
 
     let healthy = true;
     if (port) {
-        healthy = await waitForPort(port, 15000);
+        healthy = await waitForPort(port, timeout);
         // If not healthy, attempt kill & retry once (force port free and restart)
         if (!healthy) {
             try {
@@ -94,7 +98,7 @@ export const startServiceWithHealth = async ({ command, port, name }) => {
                 if (killed) {
                     // restart
                     await startService({ command, port });
-                    healthy = await waitForPort(port, 10000);
+                    healthy = await waitForPort(port, Math.max(10000, timeout / 2));
                 }
             } catch (e) {
                 /* ignore and return unhealthy */
@@ -131,7 +135,8 @@ export const startDevelopmentSession = async ({ skipDocker=false, runPlaywright=
     // 2) Ensure Storybook (port 6006)
     try {
         // Start storybook in CI/non-interactive mode to avoid CLI prompts when port is occupied
-        results.storybook = await startServiceWithHealth({ command: 'npm --workspace=ui run storybook -- --ci --port 6006', port: 6006, name: 'storybook' });
+        // Prefer an explicit script to avoid passing extra flags that may not be understood by all Storybook versions
+    results.storybook = await startServiceWithHealth({ command: 'npm --workspace=ui run storybook:ci', port: 6006, name: 'storybook', timeout: 30000 });
     } catch(e) { results.storybook = { ok: false, error: e.message } }
 
     // 3) Ensure App (Next) -- default port 3000

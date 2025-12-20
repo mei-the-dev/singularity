@@ -43,7 +43,6 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "jsdom": "^22.0.0",
-    "jest-axe": "^8.0.0",
-    "axe-core": "^5.0.0"
+    "jest-axe": "^8.0.0"
   }
 }
