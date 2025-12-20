@@ -1,0 +1,30 @@
+name: 'UI: Storybook Visual Tests'
+
+on:
+  pull_request:
+    paths:
+      - 'ui/**'
+
+jobs:
+  build-storybook-and-run-visuals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm --prefix ui ci
+      - name: Build Storybook
+        run: npm --prefix ui run build-storybook
+      - name: Serve Storybook
+        run: |
+          npx serve -s ui/storybook-static -l 9001 &
+          sleep 2
+      - name: Install Playwright browsers
+        run: npm --prefix ui run playwright:install
+      - name: Run Playwright Visual Tests
+        run: npm --prefix ui run playwright:test --config=./e2e/playwright.config.ts
+        env:
+          STORYBOOK_BASE: http://localhost:9001
