@@ -11,7 +11,7 @@ const COLUMNS: { key: Issue['status']; title: string; style?: string }[] = [
 ];
 
 export default function KanbanBoard() {
-  const { issues, updateIssueStatus } = useIssues();
+  const { issues, updateIssueStatus, searchTerm } = useIssues();
   const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const onDragEnd = (e: any, issue: Issue) => {
@@ -39,11 +39,11 @@ export default function KanbanBoard() {
         <div key={col.key} className="flex flex-col" ref={(el) => { columnRefs.current[col.key] = el; }}>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-medium text-white">{col.title}</h3>
-            <div className="text-sm text-white/50">{issues.filter(i => i.status === col.key).length}</div>
+            <div className="text-sm text-white/50">{issues.filter(i => i.status === col.key && (!searchTerm || JSON.stringify(i).toLowerCase().includes(searchTerm.toLowerCase()))).length}</div>
           </div>
           <div className="space-y-3 min-h-[200px]">
             {issues
-              .filter((i) => i.status === col.key)
+              .filter((i) => i.status === col.key && (!searchTerm || JSON.stringify(i).toLowerCase().includes(searchTerm.toLowerCase())))
               .map((issue) => (
                 <div key={issue.id} onPointerUp={(e) => onDragEnd(e as any, issue)}>
                   <IssueCard issue={issue} />
