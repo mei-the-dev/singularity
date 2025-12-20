@@ -38,13 +38,16 @@ jobs:
           PORT=3000 nohup npm --prefix ui run start > ui/logs/ci-start.log 2>&1 &
           sleep 5
           ps aux | head -n 5
-      - name: Setup Playwright browsers via official Action
-        uses: microsoft/playwright-github-action@v1
-        with:
-          browsers: chromium
-          install-deps: true
-          headless: true
-          cache: true
+      - name: Install Playwright browsers (chromium)
+        run: |
+          mkdir -p ui/logs
+          # Try installing with system deps first, fall back to browser-only install if it fails
+          echo "Attempting to install Playwright with system deps (may be unsupported on some runners)"
+          set -e
+          npx playwright install --with-deps > ui/logs/playwright-install.log 2>&1 || (
+            echo "--with-deps failed, falling back to browser-only install; see ui/logs/playwright-install.log" && \
+            npx playwright install chromium > ui/logs/playwright-install.log 2>&1
+          )
       - name: Wait for Next app to be ready
         run: |
           set -e
