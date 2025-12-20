@@ -21,10 +21,10 @@ jobs:
           key: ${{ runner.os }}-node-modules-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
-      - name: Cache Playwright browsers
+      - name: Cache Playwright browsers (repo-local path)
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
+          path: ui/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-browsers-
@@ -42,13 +42,15 @@ jobs:
           sleep 5
           ps aux | head -n 5
       - name: Install Playwright browsers (capture logs)
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ui/.cache/ms-playwright
         run: |
-          mkdir -p ui/logs
-          npm --prefix ui run playwright:install > ui/logs/playwright-install.log 2>&1 || (echo "Playwright install failed - printing log" && sed -n '1,200p' ui/logs/playwright-install.log && false)
+          mkdir -p ui/logs ui/.cache/ms-playwright
+          PLAYWRIGHT_BROWSERS_PATH=ui/.cache/ms-playwright npm --prefix ui run playwright:install > ui/logs/playwright-install.log 2>&1 || (echo "Playwright install failed - printing log" && sed -n '1,200p' ui/logs/playwright-install.log && false)
       - name: Debug: Playwright cache + node modules
         run: |
-          echo "Playwright cache size:" && du -sh ~/.cache/ms-playwright || true
-          echo "Contents of Playwright cache (top):" && ls -la ~/.cache/ms-playwright | head -n 20 || true
+          echo "Playwright cache size:" && du -sh ui/.cache/ms-playwright || true
+          echo "Contents of Playwright cache (top):" && ls -la ui/.cache/ms-playwright | head -n 20 || true
           echo "Node modules size:" && du -sh ui/node_modules || true
           echo "node_modules (top):" && ls -la ui/node_modules | head -n 40 || true
           echo "Playwright install tail log:" && tail -n 200 ui/logs/playwright-install.log || true
