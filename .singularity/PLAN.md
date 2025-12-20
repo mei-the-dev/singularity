@@ -19,4 +19,4 @@ Notes:
 - Start with 1-2 core flows and expand coverage iteratively.
 
 CI: Added debug listing of ui/node_modules/.bin to help diagnose 'storybook: command not found' failures.
-- CI: Add node_modules + Playwright browser caches to speed up installs on repeated runs.
+- CI: Use Playwright Docker image to run E2E tests with browsers preinstalled (reduces flakiness and install time).
