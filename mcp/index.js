@@ -6,6 +6,9 @@ import * as Ops from './tools/ops.js';
 import * as Git from './tools/git.js';
 import * as Files from './tools/files.js';
 
+// Import new scaffold tools
+import { registerScaffoldComponent, registerGenerateStoryTest } from './tools/scaffold/index.js';
+
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
   { name: "start_dev", handler: async ({ skipDocker=false }) => Ops.startDevelopmentSession({ skipDocker, runPlaywright: false }), schema: { type: "object", properties: { skipDocker:{type:"boolean"} } } },
@@ -44,6 +47,17 @@ const TOOLS = [
   { name: "list-all-components", handler: async ({ baseUrl }) => (await import('./tools/list-all-components.js')).listAllComponents({ baseUrl }), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
   { name: "get-component-documentation", handler: async ({ componentId, baseUrl }) => (await import('./tools/get-component-documentation.js')).getComponentDocumentation({ componentId, baseUrl }), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } }
 ];
+
+// Register new scaffold tools (TypeScript codegen and test injection)
+const scaffoldTools = [];
+const mockServer = {
+  tool: (name, schema, handler) => {
+    scaffoldTools.push({ name, handler, schema });
+  }
+};
+registerScaffoldComponent(mockServer);
+registerGenerateStoryTest(mockServer);
+scaffoldTools.forEach(t => TOOLS.push({ name: t.name, handler: t.handler, schema: t.schema }));
 
 const server = new Server({ name: "singularity-core", version: "21.0.0" }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS.map(t => ({ name: t.name, inputSchema: t.schema })) }));
