@@ -1,9 +1,16 @@
 'use client';
 import { Terminal, Cpu, GitBranch, Activity } from 'lucide-react';
+import { IssuesProvider } from '../components/IssuesProvider';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ToastProvider } from '../components/Toast';
+import KanbanBoard from '../components/KanbanBoard';
 
 export default function SingularityDashboard() {
-  return (
-    <div className="h-screen w-full flex flex-col p-8 font-mono">
+    return (
+        <ToastProvider>
+        <IssuesProvider>
+            <ErrorBoundary>
+                <div className="h-screen w-full flex flex-col p-8 font-mono">
       {/* Header */}
       <header className="flex justify-between items-end border-b border-white/10 pb-4 mb-8">
         <div>
@@ -21,19 +28,21 @@ export default function SingularityDashboard() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
         
-        {/* Active Task */}
-        <div className="glass-panel rounded-2xl p-6 md:col-span-2 flex flex-col relative overflow-hidden group">
+        {/* Main: Kanban Board */}
+        <div className="glass-panel rounded-2xl p-6 md:col-span-2 flex flex-col relative overflow-hidden group" role="region" aria-label="Main Kanban">
             <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition"><Cpu size={48} /></div>
-            <h2 className="text-xl text-cyan-300 mb-6 flex items-center gap-2"><Activity /> ACTIVE SEQUENCE</h2>
-            
-            <div className="flex-1 flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <p className="text-4xl font-light text-white">AWAITING INPUT</p>
-                    <p className="text-sm text-cyan-400/50">Listening on Secure Channel /nexus</p>
-                </div>
+
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xl text-cyan-300 mb-0 flex items-center gap-2"><Activity /> KANBAN BOARD</h2>
+                <div className="text-xs text-white/50">Live</div>
             </div>
-            
-            <div className="mt-auto pt-4 border-t border-white/5 flex gap-4 text-sm text-white/40">
+
+            <div className="flex-1 min-h-[420px]">
+                {/* KanbanBoard component renders columns and issues */}
+                <KanbanBoard />
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-white/5 flex gap-4 text-sm text-white/40">
                 <span>TaskID: NULL</span>
                 <span>Context: IDLE</span>
             </div>
@@ -60,7 +69,10 @@ export default function SingularityDashboard() {
             </div>
         </div>
 
-      </div>
-    </div>
-  );
+            </div>
+                </div>
+            </ErrorBoundary>
+        </IssuesProvider>
+        </ToastProvider>
+    );
 }
