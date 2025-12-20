@@ -1,14 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, GitBranch, GitCommit, GitPullRequest, CheckCircle, Clock, AlertCircle, User } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Plus, Search, Filter, GitBranch } from 'lucide-react';
+import BlackholeBackground from '../BlackholeBackground/BlackholeBackground';
+import IssueCard from '../IssueCard/IssueCard';
+import type { Issue } from '../../types';
 
-const BlackholeBoard = () => {
-  const [selectedIssue, setSelectedIssue] = useState(null);
+const BlackholeBoard: React.FC = () => {
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // PERFORMANCE: use CSS vars on container instead of React state for mouse position
   useEffect(() => {
+    const el = containerRef.current || document.documentElement;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      try {
+        el.style.setProperty('--mouse-x', `${e.clientX}px`);
+        el.style.setProperty('--mouse-y', `${e.clientY}px`);
+      } catch (err) {
+        // best-effort, ignore
+      }
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
@@ -22,7 +32,7 @@ const BlackholeBoard = () => {
     { id: 'done', title: 'Done', color: 'from-amber-400/30 to-amber-300/20' }
   ];
 
-  const issues = [
+  const issues: Issue[] = [
     { id: 1, title: 'Implement authentication module', status: 'inprogress', assignee: 'JD', priority: 'high', points: 8, type: 'feature' },
     { id: 2, title: 'Fix memory leak in data service', status: 'review', assignee: 'AS', priority: 'critical', points: 5, type: 'bug' },
     { id: 3, title: 'Design new dashboard layout', status: 'todo', assignee: 'MK', priority: 'medium', points: 3, type: 'design' },
@@ -61,7 +71,7 @@ const BlackholeBoard = () => {
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96"
           style={{
-            transform: `translate(-50%, -50%) translate(${(mousePosition.x - window.innerWidth / 2) / 50}px, ${(mousePosition.y - window.innerHeight / 2) / 50}px)`
+            transform: 'translate(-50%, -50%) translate(calc((var(--mouse-x, 50vw) - 50vw)/50), calc((var(--mouse-y, 50vh) - 50vh)/50))'
           }}
         >
           <div className="absolute inset-0 rounded-full bg-black blur-xl animate-pulse"></div>
@@ -147,46 +157,7 @@ const BlackholeBoard = () => {
                   {issues
                     .filter(issue => issue.status === column.id)
                     .map((issue) => (
-                      <div
-                        key={issue.id}
-                        onClick={() => setSelectedIssue(issue)}
-                        className="bg-gradient-to-br from-amber-950/40 to-amber-900/20 border border-amber-800/30 rounded-lg p-3 cursor-pointer transition-all duration-300 hover:border-amber-600/50 hover:shadow-lg hover:shadow-amber-900/30 hover:-translate-y-1 group"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(issue.priority)}`}>
-                            {issue.priority}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs text-amber-600">{getTypeIcon(issue.type)}</span>
-                            <span className="text-xs text-amber-700">#{issue.id}</span>
-                          </div>
-                        </div>
-
-                        <h4 className="text-sm text-amber-100 mb-3 group-hover:text-amber-50 transition-colors">
-                          {issue.title}
-                        </h4>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-[10px] font-medium text-black shadow-md">
-                              {issue.assignee}
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-amber-700">
-                              <Clock className="w-3 h-3" />
-                              <span>{issue.points}pt</span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-1 hover:bg-amber-900/30 rounded transition-colors">
-                              <GitCommit className="w-3 h-3 text-amber-600" />
-                            </button>
-                            <button className="p-1 hover:bg-amber-900/30 rounded transition-colors">
-                              <GitPullRequest className="w-3 h-3 text-amber-600" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      <IssueCard key={issue.id} issue={issue} onClick={() => setSelectedIssue(issue)} />
                     ))}
                 </div>
               </div>
