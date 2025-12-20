@@ -15,52 +15,69 @@ starters:
     command: "/ship"
 
 # Tool reference (name, description, expected args)
-# NOTE: Keep these in sync with actual MCP tool implementations in `mcp/tools/*.js`
+# NOTE: These entries must match the tools registered by `mcp/index.js` (my-mcp-server).
+# See: `mcp/index.js` TOOLS list for authoritative names and schemas.
 tools:
-  - name: list_issues
-    description: "Fetch backlog. Use this to find Issue IDs."
-    args: {}
-  - name: read_context
-    description: "Check the active .task-context (Branch/Issue)."
-    args: {}
-  - name: read_file
-    description: "Read code or a persistent file (e.g., `.singularity/PLAN.md`)."
-    args: { path: "string (relative to repo root)" }
-  - name: explore_file_tree
-    description: "Map the repository architecture."
-    args: { path: "string (optional, relative)", depth: "number (optional)" }
-  - name: search_code
-    description: "Find definitions and references."
-    args: { query: "string" }
-  - name: stat_file
-    description: "Check if a file exists and get metadata."
-    args: { path: "string" }
-  - name: write_file
-    description: "Create or Edit files (Code, Plans, Tests)."
-    args: { path: "string", content: "string" }
-  - name: start_task
-    description: "Switch Git Branch & Context. Creates/checks-out a task branch for an issue."
-    args:
-      issue_id: "string|number"
-  - name: create_issue
-    description: "Add new tasks to GitHub."
-    args:
-      title: "string"
-      body: "string (optional)"
   - name: start_service
-    description: "Run npm scripts (dev/build). Useful to compile and validate changes."
+    description: "Run a service command (e.g., start dev server)."
     args:
-      command: "string"
+      command: "string (required)"
       port: "number (optional)"
   - name: run_tests
-    description: "Execute the repository tests (e.g., `npm test`). MANDATORY before shipping."
+    description: "Execute the repository tests (runs test suite)."
     args: {}
-  - name: check_pipeline
-    description: "Verify GitHub Actions / CI status for the current branch/PR."
-    args: {}
+
+  - name: list_issues
+    description: "Fetch backlog. Use this to find Issue IDs."
+    args:
+      limit: "number (optional)"
+  - name: create_issue
+    description: "Add new tasks to GitHub. (title and body required by server)"
+    args:
+      title: "string (required)"
+      body: "string (required)"
   - name: create_pr
-    description: "Submit code. Creates a PR with the current branch."
-    args: { title: "string" }
+    description: "Create a PR from the current branch."
+    args:
+      title: "string (required)"
+  - name: start_task
+    description: "Create/checkout a task branch for an issue."
+    args:
+      issue_id: "number (required)"
+  - name: get_git_diff
+    description: "Return git diff for current working tree."
+    args: {}
+  - name: update_issue
+    description: "Update an issue (e.g., close/reopen)."
+    args:
+      issue_number: "number (required)"
+      state: "string (required)"
+
+  - name: read_file
+    description: "Read a file from the repo (path required)."
+    args:
+      path: "string (required, relative to repo root)"
+  - name: write_file
+    description: "Write a file in the repo (path & content required)."
+    args:
+      path: "string (required)"
+      content: "string (required)"
+  - name: stat_file
+    description: "Return file metadata for a path."
+    args:
+      path: "string (required)"
+  - name: check_pipeline
+    description: "Return CI status for the current branch/PR."
+    args: {}
+  - name: search_code
+    description: "Search repo code; returns grep-like matches."
+    args:
+      query: "string (required)"
+  - name: explore_file_tree
+    description: "Return a shallow directory tree for inspection."
+    args:
+      path: "string (optional, relative)"
+      depth: "number (optional)"
 
 ---
 
@@ -98,11 +115,24 @@ You rely on a persistent file: `.singularity/PLAN.md`.
 - **Explicit Arguments:** When calling `start_task`, `start_service`, or `create_pr`, always include the minimal args (e.g., `issue_id`, `command`, `title`).
 
 ## 🔧 Agent Developer Notes (mapping to code & server)
-- This manifest targets the local MCP server **`my-mcp-server`**. The implemented tools are available from the `mcp/tools/` directory in this repository.
-- File operations are provided by the MCP tool `read_file` / `write_file` (implementation: `mcp/tools/files.js`, exports: `readFile`, `writeFile`, `statFile`, `searchCode`, `exploreTree`).
-- Git & issue operations are provided by the MCP tool `start_task` / `create_issue` / `create_pr` (implementation: `mcp/tools/git.js`, exports include: `createIssue`, `updateIssue`, `startTask`, `createPr`, `checkPipeline`).
-- Service/test helpers are provided by `mcp/tools/ops.js` (exposes: `startService`, `runTests`, environment helpers).
-- If you need to target a different repo in tests or in-process runs, use the `MCP_REPO_OVERRIDE` environment variable to point the server at a temporary repository path.
+- This manifest targets the local MCP server **`my-mcp-server`**. The implemented tools are available from the `mcp/tools/` directory in this repository and are registered by `mcp/index.js`.
+
+### Server & CLI
+- **Start the MCP server (JSON-RPC over stdio):**
+  - `node mcp/index.js`
+  - It exposes the tools listed above to connected clients (JSON-RPC v2 over stdio).
+- **List available tools (human-friendly):**
+  - `node mcp/list-tools.js` — spawns the server and prints the registered tool schemas.
+- **Launch the UI (optional):**
+  - `bin/nexus` (runs `npm run dev --prefix ui`).
+
+### Implementation mapping
+- File operations: `mcp/tools/files.js` → exports: `readFile`, `writeFile`, `statFile`, `searchCode`, `exploreTree` (mapped to `read_file`, `write_file`, `stat_file`, `search_code`, `explore_file_tree`).
+- Git & issue operations: `mcp/tools/git.js` → exports: `createIssue`, `updateIssue`, `startTask`, `createPR`, `getDiff`, `checkPipeline` (mapped to `create_issue`, `update_issue`, `start_task`, `create_pr`, `get_git_diff`, `check_pipeline`).
+- Service/test helpers: `mcp/tools/ops.js` → `startService`, `runTests` (mapped to `start_service`, `run_tests`).
+
+**Note:** Tests and agent integrations should use `MCP_REPO_OVERRIDE` to point the server at a temp repository path for deterministic behavior.
+
 
 ## 📚 Troubleshooting & Debugging
 - If `read_file` returns `Access Denied`, use `stat_file` then `debugPath` (if available) and check `.singularity/PLAN.md` for context.
