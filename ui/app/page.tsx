@@ -1,9 +1,15 @@
 'use client';
 import { Terminal, Cpu, GitBranch, Activity } from 'lucide-react';
+import { IssuesProvider } from '../components/IssuesProvider';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ToastProvider } from '../components/Toast';
 
 export default function SingularityDashboard() {
-  return (
-    <div className="h-screen w-full flex flex-col p-8 font-mono">
+    return (
+        <ToastProvider>
+        <IssuesProvider>
+            <ErrorBoundary>
+                <div className="h-screen w-full flex flex-col p-8 font-mono">
       {/* Header */}
       <header className="flex justify-between items-end border-b border-white/10 pb-4 mb-8">
         <div>
@@ -60,7 +66,9 @@ export default function SingularityDashboard() {
             </div>
         </div>
 
-      </div>
-    </div>
-  );
+            </div>
+                </div>
+            </ErrorBoundary>
+        </IssuesProvider>
+    );
 }
