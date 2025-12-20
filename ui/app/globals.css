@@ -1,36 +1,103 @@
-@tailwind base; @tailwind components; @tailwind utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root { --accent: #00f0ff; --accent-dim: #00f0ff20; }
-body { background: #000; color: #fff; overflow: hidden; }
+:root {
+  /* Core palette (Void & Gold) */
+  --bg: #040407; /* space black */
+  --panel: rgba(14, 12, 15, 0.6);
+  --panel-contrast: rgba(255,255,255,0.04);
+  --gold: #D4AF37;
+  --gold-dim: rgba(212,175,55,0.12);
+  --gold-subtle: rgba(212,175,55,0.06);
+
+  /* Accents & semantic colors */
+  --accent: #00f0ff;
+  --accent-dim: #00f0ff20;
+  --muted: #9aa3b2;
+  --success: #1db954;
+  --warning: #ffb86b;
+  --danger: #ff6b6b;
+
+  /* Motion tokens */
+  --motion-duration-short: 140ms;
+  --motion-duration-medium: 240ms;
+  --motion-easing: cubic-bezier(0.2, 0.9, 0.2, 1);
+
+  /* Accessibility helpers */
+  --focus-ring: 4px;
+}
+body { background: var(--bg); color: #fff; overflow: hidden; font-family: 'Inter', sans-serif; }
 
 /* The Event Horizon */
 .black-hole-container {
-    position: fixed; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80vw; height: 80vw;
-    z-index: -1; pointer-events: none;
-    opacity: 0.6;
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80vw; height: 80vw;
+        z-index: -1; pointer-events: none;
+        opacity: 0.6;
 }
 .accretion-disk {
-    position: absolute; inset: 0;
-    background: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(100,0,255,0.2) 45%, rgba(0,240,255,0.4) 50%, transparent 70%);
-    filter: blur(40px);
-    animation: pulse 10s infinite alternate;
+        position: absolute; inset: 0;
+        background: radial-gradient(circle, rgba(0,0,0,1) 35%, rgba(30,0,60,0.25) 44%, rgba(40,10,80,0.18) 50%, transparent 75%);
+        filter: blur(40px);
+        animation: pulse 10s infinite alternate;
 }
 .singularity {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20%; height: 20%;
-    background: #000;
-    border-radius: 50%;
-    box-shadow: 0 0 50px 20px rgba(0, 150, 255, 0.3);
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 16%; height: 16%;
+        background: linear-gradient(135deg, rgba(10,10,10,1), rgba(30,20,10,0.9));
+        border-radius: 50%;
+        box-shadow: 0 0 60px 24px rgba(212,175,55,0.08), 0 0 10px 4px rgba(0,240,255,0.04) inset;
 }
 
-@keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.1); } }
+@keyframes pulse { 0% { opacity: 0.4; transform: scale(1); } 100% { opacity: 0.85; transform: scale(1.06); } }
 
 .glass-panel {
-    background: rgba(10, 10, 15, 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        background: var(--panel);
+        backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(212,175,55,0.06);
+        box-shadow: 0 6px 30px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.02) inset;
+        transition: box-shadow 180ms ease, transform 180ms ease;
 }
+
+/* subtle glow for focused elements */
+.focus-gold:focus, .focus-gold:focus-visible { box-shadow: 0 0 0 4px var(--gold-dim); }
+
+@media (max-width: 640px) {
+    .glass-panel {
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+    .kanban-board {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .kanban-board {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+input, select {
+    color: #fff;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--gold-dim);
+}
+
+/* animations */
+@keyframes highlight-pulse { 0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 18px 6px rgba(212,175,55,0.06); } }
+.drop-highlight { animation: highlight-pulse 450ms ease forwards; }
+
+/* small utility */
+.gold-text { color: var(--gold); }
+.gold-border { border-color: rgba(212,175,55,0.14); }
