@@ -30,14 +30,14 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
   const onDragOver = (e: React.DragEvent) => e.preventDefault();
 
   return (
-    <div className="min-w-[320px]">
+    <div className="min-w-[320px]" data-testid="kanban-column" aria-label={title} role="listitem">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-white">{title}</h3>
         <div className="text-xs text-white/50">{issues.length}</div>
       </div>
-      <div onDrop={onDrop} onDragOver={onDragOver} className="space-y-3 min-h-[300px]">
+      <div onDrop={onDrop} onDragOver={onDragOver} className="space-y-3 min-h-[300px] transition-all rounded-md p-2 hover:bg-white/5" aria-label={`${title} issues`} role="list">
         {issues.map((i) => (
-          <div key={i.id} draggable onDragStart={(e) => e.dataTransfer.setData('text/issue-id', i.id)}>
+          <div key={i.id} draggable onDragStart={(e) => e.dataTransfer.setData('text/issue-id', i.id)} tabIndex={0}>
             <IssueCard issue={{ id: i.id, title: i.title, status: statusFromTitle(title) as any, assignee: i.assignee }} />
           </div>
         ))}
