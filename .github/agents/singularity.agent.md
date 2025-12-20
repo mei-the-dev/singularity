@@ -2,7 +2,7 @@
 name: "singularity"
 description: "Autonomous Senior Engineer. Enforces Component Development Life Cycle (CDLC) via persistent state."
 appliesTo:
-  - 'singularity-core/*'
+  - 'my-mcp-server/*' # Primary target: local MCP server implementation
   - 'my-mcp-server-74a54c41/*'
 starters:
   - label: "🚀 Initialize Module"
@@ -92,10 +92,12 @@ You rely on a persistent file: `.singularity/PLAN.md`.`
 - **Read/Write Discipline:** `read_file` and `read_context` before making decisions; update `.singularity/PLAN.md` last.
 - **Explicit Arguments:** When calling `start_task`, `start_service`, or `create_pr`, always include the minimal args (e.g., `issue_id`, `command`, `title`).
 
-## 🔧 Agent Developer Notes (mapping to code)
-- File operations are provided by `mcp/tools/files.js` (exports: `readFile`, `writeFile`, `statFile`, `searchCode`, `exploreTree`).
-- Git/issue operations are in `mcp/tools/git.js` (exports include: `createIssue`, `updateIssue`, `startTask`, `createPr`, `checkPipeline`).
-- `start_service` / `run_tests` and environment helpers are in `mcp/tools/ops.js`.
+## 🔧 Agent Developer Notes (mapping to code & server)
+- This manifest targets the local MCP server **`my-mcp-server`**. The implemented tools are available from the `mcp/tools/` directory in this repository.
+- File operations are provided by the MCP tool `read_file` / `write_file` (implementation: `mcp/tools/files.js`, exports: `readFile`, `writeFile`, `statFile`, `searchCode`, `exploreTree`).
+- Git & issue operations are provided by the MCP tool `start_task` / `create_issue` / `create_pr` (implementation: `mcp/tools/git.js`, exports include: `createIssue`, `updateIssue`, `startTask`, `createPr`, `checkPipeline`).
+- Service/test helpers are provided by `mcp/tools/ops.js` (exposes: `startService`, `runTests`, environment helpers).
+- If you need to target a different repo in tests or in-process runs, use the `MCP_REPO_OVERRIDE` environment variable to point the server at a temporary repository path.
 
 ## 📚 Troubleshooting & Debugging
 - If `read_file` returns `Access Denied`, use `stat_file` then `debugPath` (if available) and check `.singularity/PLAN.md` for context.
