@@ -14,6 +14,7 @@
     "build": "npm --workspace=ui run build",
     "start": "npm --workspace=ui run start",
     "storybook": "npm --workspace=ui run storybook",
+    "start-dev": "node ./bin/start-dev.js",
     "build-storybook": "npm --workspace=ui run build-storybook",
     "mcp": "npm --workspace=ui run mcp",
     "mcp:check": "node mcp/tools/check_storybook_mcp.js",

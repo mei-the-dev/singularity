@@ -8,6 +8,8 @@ import * as Files from './tools/files.js';
 
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
+  { name: "start_development_session", handler: Ops.startDevelopmentSession, schema: { type: "object", properties: { skipDocker:{type:"boolean"} } } },
+  { name: "check_services", handler: Ops.checkServices, schema: { type: "object", properties: { ports:{ type: "array", items: { type: "number" } } } } },
   { name: "run_tests", handler: Ops.runTests, schema: { type: "object", properties: {} } },
   
   { name: "list_issues", handler: Git.listIssues, schema: { type: "object", properties: { limit:{type:"number"} } } },

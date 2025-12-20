@@ -13,6 +13,10 @@ starters:
     command: "/verify"
   - label: "📦 Ship"
     command: "/ship"
+  - label: "📚 Storybook"
+    command: "/storybook"
+  - label: "🚧 Start Dev"
+    command: "/start-dev"
 tools:
   - name: start_service
     args:
@@ -73,6 +77,7 @@ tools:
 - Implement a feature and ship with excellence:
   1. `/build` -> `write_file` to add implementation and tests, following best practices and striving for clarity, maintainability, and robust error handling.
   2. `start_service({ command: "npm run dev", port: 3000 })` to sanity-check compile
+  2b. Prefer `start_service("npm run start-dev", 6006)` or the `/start-dev` starter which will start docker, Storybook, the app, and install Playwright as part of a development session.
   3. `/verify` -> `run_tests()` until all tests pass
   4. `create_pr({ title: "feat: add XYZ" })`
   5. `mcp_singularity-c_check_pipeline()` -> This is the final CI gatekeeper. Only proceed to merge or ship if this passes. If it fails, analyze and fix all issues before retrying.
@@ -84,6 +89,8 @@ tools:
 - **Test First/Last:** Tests (`run_tests`) must be run and pass before `create_pr` or `ship` steps.
 - **Read/Write Discipline:** `read_file` and `read_context` before making decisions; update `.singularity/PLAN.md` last.
 - **Explicit Arguments:** When calling `start_task`, `start_service`, or `create_pr`, always include the minimal args (e.g., `issue_id`, `command`, `title`).
+- **Background Servers Required:** Start long-lived servers (for example Storybook) using `start_service` or the `/storybook` pseudo-command and run them as background/detached processes; **Storybook should bind to port 6006** when used by tests and automation.
+- **No ad-hoc sleep/curl readiness checks:** Avoid `sleep && curl` or similar ad-hoc polling to verify service readiness; prefer health-check endpoints, port checks, or the `start_service` tool which validates a port is listening.
 
 ## 🔧 Agent Developer Notes (mapping to code & server)
 
