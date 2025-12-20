@@ -14,10 +14,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install dependencies
-        run: npm --prefix ui install --no-audit --prefer-offline
+      - name: Install dependencies (including dev)
+        run: |
+          NODE_ENV=development npm --prefix ui install --no-audit --prefer-offline --include=dev
+          echo "Debug: tools in ui/node_modules/.bin"
+          ls -la ui/node_modules/.bin || true
       - name: Build Storybook
         run: npm --prefix ui run build-storybook
+
       - name: Serve Storybook
         run: |
           npx serve -s ui/storybook-static -l 9001 &
