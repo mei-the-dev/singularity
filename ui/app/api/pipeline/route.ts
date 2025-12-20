@@ -29,8 +29,16 @@ async function callMCPTool(name: string, args: any = {}){
   });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const issueId = url.searchParams.get('issueId');
+    if (issueId) {
+      // For now, return a synthetic status per issue (placeholder until real tool supports per-issue)
+      const idx = parseInt(issueId.replace(/\D/g, '') || '0', 10);
+      const statuses = ['success', 'failure', 'running', 'unknown'];
+      return NextResponse.json({ status: statuses[idx % statuses.length], lastRun: new Date().toISOString() });
+    }
     const res = await callMCPTool('check_pipeline', {});
     if (!res) return NextResponse.json({ status: 'unknown' });
     return NextResponse.json(res);

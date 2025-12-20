@@ -30,12 +30,34 @@ const IssueCardInner = ({ issue, onOpen }: { issue: Issue; onOpen?: (id: string)
         </div>
         <div className="text-xs" style={{ color: 'var(--accent)' }}>{issue.priority || 'Medium'}</div>
       </div>
-      <div className="mt-3 text-xs flex justify-between" style={{ color: 'var(--muted)' }}>
+      <div className="mt-3 text-xs flex justify-between items-center" style={{ color: 'var(--muted)' }}>
         <span>#{issue.id}</span>
-        <span>{issue.assignee || 'Unassigned'}</span>
+        <div className="flex items-center gap-2">
+          <span>{issue.assignee || 'Unassigned'}</span>
+          <PipelineBadge issueId={issue.id} />
+        </div>
       </div>
     </motion.div>
   );
+};
+
+const PipelineBadge: React.FC<{ issueId: string }> = ({ issueId }) => {
+  const [status, setStatus] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/pipeline?issueId=${issueId}`);
+        if (!res.ok) return;
+        const d = await res.json();
+        if (mounted) setStatus(d.status);
+      } catch (e) {}
+    })();
+    return () => { mounted = false; };
+  }, [issueId]);
+  if (!status) return null;
+  const color = status === 'success' ? 'var(--success)' : status === 'failure' ? 'var(--danger)' : 'var(--muted)';
+  return <span style={{ padding: '2px 6px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, color, fontSize: 11 }}>{status}</span>;
 };
 
 export default React.memo(IssueCardInner);
