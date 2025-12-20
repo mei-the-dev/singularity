@@ -57,8 +57,8 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         className={`space-y-3 min-h-[300px] transition-all rounded-md p-2 hover:bg-white/5 ${isDragOver ? 'drop-highlight' : ''}`}
-        animate={isDragOver ? { scale: 1.01, boxShadow: '0 12px 40px rgba(255,215,0,0.12)' } : { scale: 1, boxShadow: '0 0px 0 rgba(0,0,0,0)' }}
-        transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+        animate={isDragOver ? { scale: 1.02, boxShadow: '0 18px 60px rgba(212,175,55,0.10)', filter: 'drop-shadow(0 12px 30px rgba(212,175,55,0.06))' } : { scale: 1, boxShadow: '0 0px 0 rgba(0,0,0,0)' }}
+        transition={{ type: 'spring', stiffness: 200, damping: 22 }}
         aria-label={`${title} issues`}
         role="list"
       >
