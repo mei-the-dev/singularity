@@ -1,0 +1,34 @@
+name: 'Notify: UI visual workflow completion'
+
+on:
+  workflow_run:
+    workflows: ['UI: Storybook Visual Tests']
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  comment-on-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post result to PR(s)
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const run = github.context.payload.workflow_run;
+            const conclusion = run.conclusion || 'unknown';
+            const url = run.html_url;
+            const title = run.name || 'UI: Storybook Visual Tests';
+            const msg = `**${title}** finished with **${conclusion}**. See details: ${url}`;
+            const prs = run.pull_requests || [];
+            if (prs.length === 0) {
+              core.warning('No pull requests associated with this run.');
+            }
+            for (const pr of prs) {
+              const owner = pr.base.repo.owner.login;
+              const repo = pr.base.repo.name;
+              const prNumber = pr.number;
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: msg });
+            }
