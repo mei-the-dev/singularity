@@ -63,7 +63,33 @@ export default function KanbanColumn({ title, issues }: { title: string; issues:
         role="list"
       >
         {issues.map((i) => (
-          <div key={i.id} draggable onDragStart={(e) => e.dataTransfer?.setData('text/issue-id', i.id)} tabIndex={0}>
+          <div
+            key={i.id}
+            draggable
+            onDragStart={(e) => e.dataTransfer?.setData('text/issue-id', i.id)}
+            tabIndex={0}
+            onKeyDown={async (e: React.KeyboardEvent) => {
+              const order = ['backlog', 'in-progress', 'done'];
+              const currentIndex = order.indexOf(status);
+              let targetStatus: string | null = null;
+              if (e.key === 'ArrowRight') {
+                if (currentIndex < order.length - 1) targetStatus = order[currentIndex + 1];
+              } else if (e.key === 'ArrowLeft') {
+                if (currentIndex > 0) targetStatus = order[currentIndex - 1];
+              } else if (e.key === 'Enter') {
+                // Enter opens details (placeholder) — future: focus behavior or modal
+                return;
+              }
+              if (!targetStatus) return;
+              e.preventDefault();
+              try {
+                await fetch('/api/issues', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: i.id, status: targetStatus }) });
+                if (typeof window !== 'undefined' && !process.env.JEST_WORKER_ID) window.location.reload();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          >
             <IssueCard issue={{ id: i.id, title: i.title, status: statusFromTitle(title) as any, assignee: i.assignee }} />
           </div>
         ))}
