@@ -1,0 +1,30 @@
+name: Storybook Preview
+
+on:
+  pull_request:
+    paths:
+      - 'ui/**'
+      - '.github/workflows/**'
+
+jobs:
+  storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install UI dependencies
+        run: npm ci --prefix ui
+
+      - name: Build Storybook
+        run: npm --prefix ui run build:storybook
+
+      - name: Upload Storybook artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: ui/storybook-static
