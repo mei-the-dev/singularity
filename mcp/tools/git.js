@@ -46,7 +46,13 @@ export const createIssue = async ({ title, body }) => {
 
 export const updateIssue = async ({ issue_number, state }) => {
     try {
-        runSafe('gh', ['issue', 'edit', issue_number.toString(), '--state', state]);
+        if (state === 'closed') {
+            runSafe('gh', ['issue', 'close', String(issue_number)]);
+        } else if (state === 'open' || state === 'reopen') {
+            runSafe('gh', ['issue', 'reopen', String(issue_number)]);
+        } else {
+            return { error: `Unsupported state: ${state}` };
+        }
         return { success: true };
     } catch (e) { return { error: e.message }; }
 };
