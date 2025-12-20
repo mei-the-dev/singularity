@@ -1,7 +1,8 @@
 # Dependencies
 node_modules/
-# Explicitly ignore nested installs inside UI
+# Explicitly ignore nested installs inside UI and mcp
 /ui/node_modules/
+/mcp/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
