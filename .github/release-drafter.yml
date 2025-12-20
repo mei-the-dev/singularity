@@ -1,0 +1,25 @@
+name: 'Release Drafter'
+
+on:
+  push:
+    branches:
+      - main
+
+# See https://github.com/release-drafter/release-drafter
+
+automatically-draft-release:
+  title: 'v$NEXT_PATCH_VERSION'
+  change-template: '- $TITLE (#$NUMBER) @ $AUTHOR'
+  categories:
+    - title: '🚀 Features'
+      labels:
+        - 'type: feat'
+    - title: '🐛 Bug Fixes'
+      labels:
+        - 'type: bug'
+    - title: '🧰 Chores'
+      labels:
+        - 'type: chore'
+  template: |
+    ## What's Changed
+    $CHANGES
