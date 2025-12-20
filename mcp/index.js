@@ -19,7 +19,7 @@ if (fs.existsSync(new URL('./tools/scaffold/index.js', import.meta.url))) {
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
   { name: "start_dev", handler: async ({ skipDocker=false }) => Ops.startDevelopmentSession({ skipDocker, runPlaywright: false }), schema: { type: "object", properties: { skipDocker:{type:"boolean"} } } },
-  { name: "start_development_session", handler: Ops.startDevelopmentSession, schema: { type: "object", properties: { skipDocker:{type:"boolean"}, runPlaywright:{type:"boolean"} } } },
+  { name: "start_development_session", handler: Ops.startDevelopmentSessionBackground, schema: { type: "object", properties: { skipDocker:{type:"boolean"}, runPlaywright:{type:"boolean"} } } },
   { name: "check_services", handler: Ops.checkServices, schema: { type: "object", properties: { ports:{ type: "array", items: { type: "number" } } } } },
   { name: "run_playwright_docker", handler: Ops.runPlaywrightInDocker, schema: { type: "object", properties: { testsPath:{type:"string"}, project:{type:"string"} } } },
   { name: "install_playwright_binaries", handler: Ops.installPlaywrightBinaries, schema: { type: "object", properties: {} } },

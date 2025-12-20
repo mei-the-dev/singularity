@@ -180,6 +180,12 @@ export const startDevelopmentSession = async ({ skipDocker=false, runPlaywright=
     return results;
 };
 
+// New helper: start the full development session in a detached background worker
+export const startDevelopmentSessionBackground = async ({ skipDocker=false, runPlaywright=false } = {}) => {
+    const cmd = `node ${process.cwd()}/mcp/tools/start_development_session_worker.js ${skipDocker ? '--skipDocker' : ''} ${runPlaywright ? '--runPlaywright' : ''}`.trim();
+    return await startService({ command: cmd, port: null });
+};
+
 export const checkServices = async ({ ports = [6006, 3000] } = {}) => {
     const res = {};
     for (const p of ports) {
