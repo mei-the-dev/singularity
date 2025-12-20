@@ -3,8 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import type { Issue } from "./IssuesProvider";
 
-export default function IssueCard({ issue, onOpen }: { issue: Issue; onOpen?: (id: string) => void }) {
-  // ARIA: role, tabIndex, aria-label, color contrast
+const IssueCardInner = ({ issue, onOpen }: { issue: Issue; onOpen?: (id: string) => void }) => {
   return (
     <motion.div
       layout
@@ -21,7 +20,6 @@ export default function IssueCard({ issue, onOpen }: { issue: Issue; onOpen?: (i
       tabIndex={0}
       aria-label={`Issue card: ${issue.title}`}
       onKeyDown={(e) => {
-        // Small keyboard shim: Enter to open, Space to open details
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen && onOpen(issue.id); }
       }}
     >
@@ -32,10 +30,12 @@ export default function IssueCard({ issue, onOpen }: { issue: Issue; onOpen?: (i
         </div>
         <div className="text-xs" style={{ color: 'var(--accent)' }}>{issue.priority || 'Medium'}</div>
       </div>
-      <div className="mt-3 text-xs flex justify-between" style={{ color: '#B0B0B0' }}>
+      <div className="mt-3 text-xs flex justify-between" style={{ color: 'var(--muted)' }}>
         <span>#{issue.id}</span>
         <span>{issue.assignee || 'Unassigned'}</span>
       </div>
     </motion.div>
   );
-}
+};
+
+export default React.memo(IssueCardInner);
