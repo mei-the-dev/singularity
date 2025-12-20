@@ -8,8 +8,6 @@ on:
 jobs:
   build-storybook-and-run-visuals:
     runs-on: ubuntu-latest
-    # Run the job inside Playwright's official Docker image so browsers are preinstalled
-    container: mcr.microsoft.com/playwright:v1
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node
@@ -40,12 +38,13 @@ jobs:
           PORT=3000 nohup npm --prefix ui run start > ui/logs/ci-start.log 2>&1 &
           sleep 5
           ps aux | head -n 5
-      - name: Verify Playwright in container
-        run: |
-          echo "Playwright CLI version:" && npx playwright --version || true
-          echo "Chromium available (sample):" && npx playwright show-browsers | head -n 40 || true
-          echo "Node version:" && node --version || true
-          echo "NPM version:" && npm --version || true
+      - name: Setup Playwright browsers via official Action
+        uses: microsoft/playwright-github-action@v1
+        with:
+          browsers: chromium
+          install-deps: true
+          headless: true
+          cache: true
       - name: Run Playwright E2E tests
         run: npm --prefix ui run playwright:test --config=./e2e/playwright.config.ts
         env:
