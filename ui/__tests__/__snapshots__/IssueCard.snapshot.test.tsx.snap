@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`IssueCard snapshot 1`] = `
+<div
+  aria-label="Issue card: Snapshot Test"
+  class="glass-panel p-4 rounded-lg cursor-grab active:cursor-grabbing focus:outline-none focus-gold transition-shadow duration-[var(--motion-duration-short)] ease-[var(--motion-easing)] hover:shadow-2xl"
+  draggable="false"
+  role="button"
+  style="background: linear-gradient(180deg, rgba(20,20,20,0.8), rgba(8,8,10,0.7)); filter: drop-shadow(0 8px 24px var(--gold-subtle)); user-select: none;"
+  tabindex="0"
+>
+  <div
+    class="flex justify-between items-start"
+  >
+    <div>
+      <div
+        class="text-sm font-semibold"
+        style="color: var(--gold);"
+      >
+        Task
+      </div>
+      <div
+        class="font-semibold mt-1"
+        style="color: var(--panel-contrast);"
+      >
+        Snapshot Test
+      </div>
+    </div>
+    <div
+      class="text-xs"
+      style="color: var(--accent);"
+    >
+      Medium
+    </div>
+  </div>
+  <div
+    class="mt-3 text-xs flex justify-between items-center"
+    style="color: var(--muted);"
+  >
+    <span>
+      #
+      1
+    </span>
+    <div
+      class="flex items-center gap-2"
+    >
+      <span>
+        Unassigned
+      </span>
+    </div>
+  </div>
+</div>
+`;
