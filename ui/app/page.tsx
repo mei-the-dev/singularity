@@ -70,5 +70,6 @@ export default function SingularityDashboard() {
                 </div>
             </ErrorBoundary>
         </IssuesProvider>
+        </ToastProvider>
     );
 }
