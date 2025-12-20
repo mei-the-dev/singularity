@@ -143,7 +143,7 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
     try {
         try {
             execSync('docker info', { stdio: 'ignore' });
-            const image = 'mcr.microsoft.com/playwright:v1';
+            const image = 'mcr.microsoft.com/playwright:latest';
             try {
                 // Validate the image & Playwright install inside container
                 execSync(`docker run --rm -v "${process.cwd()}:/work" -w /work ${image} npx playwright --version`, { stdio: 'ignore', timeout: 120000 });
