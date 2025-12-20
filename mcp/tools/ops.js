@@ -139,26 +139,36 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
         results.app = await startServiceWithHealth({ command: 'npm run dev --prefix ui', port: 3000, name: 'app' });
     } catch(e) { results.app = { ok: false, error: e.message } }
 
-    // 4) Ensure Playwright is available. Prefer Docker to run/playwright where browsers are preinstalled.
+    // 4) Ensure Playwright is available. Prefer Docker to run Playwright (browsers preinstalled) and optionally execute tests in-container.
     try {
-        // If Docker is available, run a lightweight playwright check inside the official image (no local host install required)
         try {
             execSync('docker info', { stdio: 'ignore' });
-            // Try to use an official Playwright image to check browsers are available. This will pull image if needed.
-            // Use the image tag that matches the repo playwright version loosely.
             const image = 'mcr.microsoft.com/playwright:v1';
             try {
-                // Run playwright --version inside container to validate tooling and browsers
+                // Validate the image & Playwright install inside container
                 execSync(`docker run --rm -v "${process.cwd()}:/work" -w /work ${image} npx playwright --version`, { stdio: 'ignore', timeout: 120000 });
                 results.playwright = { ok: true, via: 'docker', image };
             } catch (e) {
-                // If docker run failed, mark as not ok but include error
                 results.playwright = { ok: false, via: 'docker', error: e.message };
             }
         } catch (e) {
             // Docker not available: fallback to local install
             execSync('npx playwright install --with-deps', { stdio: 'ignore' });
             results.playwright = { ok: true, via: 'local' };
+        }
+
+        // If docker is available and storybook is healthy, run Playwright tests inside the container and collect artifacts
+        try {
+            if (results.playwright && results.playwright.via === 'docker' && results.storybook && results.storybook.healthy) {
+                const image = results.playwright.image || 'mcr.microsoft.com/playwright:v1';
+                // Ensure baseline dir exists
+                try { execSync('mkdir -p ui/e2e/tests/baselines'); } catch(e) {}
+                // Run the tests inside the Playwright container using host networking so it can reach Storybook on localhost
+                execSync(`docker run --rm --network host -v "${process.cwd()}:/work" -w /work ${image} bash -lc \"export STORYBOOK_URL=http://localhost:6006 && npx playwright test ui/e2e/tests --project=chromium --config=playwright.config.js --reporter=list\"`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
+                results.playwrightRun = { ok: true, via: 'docker' };
+            }
+        } catch (e) {
+            results.playwrightRun = { ok: false, via: 'docker', error: e.message };
         }
     } catch(e) { results.playwright = { ok: false, error: e.message } }
 
