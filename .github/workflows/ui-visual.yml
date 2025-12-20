@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '18'
       - name: Install dependencies
-        run: npm --prefix ui ci
+        run: npm --prefix ui install --no-audit --prefer-offline
       - name: Build Storybook
         run: npm --prefix ui run build-storybook
       - name: Serve Storybook
