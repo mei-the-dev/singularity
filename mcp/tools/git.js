@@ -82,14 +82,14 @@ export const startTask = async ({ issue_id }) => {
     // Execute git commands explicitly against MCP_REPO_OVERRIDE when present to avoid ambiguity
     const targetRepo = process.env.MCP_REPO_OVERRIDE || REPO_ROOT;
     try {
-    // Ensure target is a git repository (require .git folder to exist)
-    if (!fs.existsSync(path.join(targetRepo, '.git'))) {
-        return { error: 'Not a git repository' };
-    }
-    // double-check with git command
-    try { runSafe('git', ['-C', targetRepo, 'rev-parse', '--is-inside-work-tree']); } catch (e) { return { error: 'Not a git repository' }; }
+        // Ensure target is a git repository (require .git folder to exist)
+        if (!fs.existsSync(path.join(targetRepo, '.git'))) {
+            return { error: 'Not a git repository' };
+        }
+        // double-check with git command
+        try { runSafe('git', ['-C', targetRepo, 'rev-parse', '--is-inside-work-tree']); } catch (e) { return { error: 'Not a git repository' }; }
 
-    runSafe('git', ['-C', targetRepo, 'stash']);
+        runSafe('git', ['-C', targetRepo, 'stash']);
 
         // Determine default branch robustly
         let defaultBranch = 'main';
@@ -106,27 +106,12 @@ export const startTask = async ({ issue_id }) => {
                     else {
                         for (const b of ['main', 'master']) {
                             try { runSafe('git', ['-C', targetRepo, 'rev-parse', '--verify', b]); defaultBranch = b; break; } catch (e2) {}
->>>>>>> chore/archive-junk
                         }
                     }
                 }
             } catch (e2) { /* keep default */ }
         }
 
-<<<<<<< HEAD
-        runSafe('git', ['checkout', defaultBranch]);
-        try { runSafe('git', ['pull']); } catch(e) { /* ignore pull errors for local-only repos */ }
-        try {
-            runSafe('git', ['checkout', '-b', `task/issue-${issue_id}`]);
-        } catch (e) {
-            // If branch already exists, switch to it
-            try { runSafe('git', ['checkout', `task/issue-${issue_id}`]); } catch (e2) { throw e; }
-        }
-    } catch(e) {
-        return { error: e.message };
-    }
-    writeContext({ currentTask: issue_id, status: "in-progress" });
-=======
         runSafe('git', ['-C', targetRepo, 'checkout', defaultBranch]);
         try { runSafe('git', ['-C', targetRepo, 'pull']); } catch(e) { /* ignore pull errors for local-only repos */ }
 
@@ -147,7 +132,6 @@ export const startTask = async ({ issue_id }) => {
     } catch(e) {
         return { error: e.message };
     }
->>>>>>> chore/archive-junk
     return { msg: `Switched context to issue #${issue_id}` };
 };
 
