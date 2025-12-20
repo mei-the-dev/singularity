@@ -23,7 +23,11 @@ async function main() {
   if (r.error) throw r.error;
   let m = r.stdout.match(/\{[\s\S]*\}/);
   let res = JSON.parse(m[0]);
-  assert(res && res.content === 'hi', 'readFile failed on safe path');
+<<<<<<< HEAD
+  assert(res && res.content && res.content.trim() === 'hi', 'readFile failed on safe path');
+=======
+  assert(res && res.content && res.content.trim() === 'hi', 'readFile failed on safe path');
+>>>>>>> chore/archive-junk
 
   // Try traversal
   args = ['-e', `import('./mcp/tools/files.js').then(m=>m.readFile({path: '../package.json'}).then(r=>console.log(JSON.stringify(r))))`];
@@ -48,4 +52,8 @@ async function main() {
   process.exit(0);
 }
 
+<<<<<<< HEAD
 main().catch(e => { console.error('TEST FAILED', e); process.exit(1); });
+=======
+main().catch(e => { console.error('TEST FAILED', e); process.exit(1); });
+>>>>>>> chore/archive-junk

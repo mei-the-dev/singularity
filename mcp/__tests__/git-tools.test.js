@@ -13,8 +13,8 @@ function cleanup(p) {
 
 async function main() {
   console.log('TEST: startTask behavior');
-  const tmpGit = path.join(singularityRoot, 'tmp_git_repo_' + Date.now());
-  fs.mkdirSync(tmpGit);
+  const os = await import('os');
+  const tmpGit = fs.mkdtempSync(path.join(os.tmpdir(), 'singularity-git-'));
   spawnSync('git', ['init'], { cwd: tmpGit });
   spawnSync('git', ['config', 'user.email', 'tester@example.com'], { cwd: tmpGit });
   spawnSync('git', ['config', 'user.name', 'Tester'], { cwd: tmpGit });
@@ -42,8 +42,7 @@ async function main() {
   assert(ctx.currentTask === 9999, 'Context not written');
 
   // startTask should error on non-git repo
-  const tmpNoGit = path.join(singularityRoot, 'tmp_nogit_' + Date.now());
-  fs.mkdirSync(tmpNoGit);
+  const tmpNoGit = fs.mkdtempSync(path.join(os.tmpdir(), 'singularity-nogit-'));
   const env2 = { ...process.env, MCP_REPO_OVERRIDE: tmpNoGit };
   const r2 = spawnSync(node, args, { cwd: singularityRoot, env: env2, encoding: 'utf8', timeout: 20000 });
   if (r2.error) throw r2.error;
@@ -53,8 +52,7 @@ async function main() {
 
   // TEST: updateIssue behavior (fake gh)
   console.log('TEST: updateIssue behavior');
-  const tmpBin = path.join(singularityRoot, 'tmp_bin_' + Date.now());
-  fs.mkdirSync(tmpBin);
+  const tmpBin = fs.mkdtempSync(path.join(os.tmpdir(), 'singularity-bin-'));
   const ghScript = `#!/usr/bin/env node\nconst a = process.argv.slice(2);\nif (a[0] === 'issue' && a[1] === 'close') { console.log('Closed'); process.exit(0); }\nif (a[0] === 'issue' && a[1] === 'reopen') { console.log('Reopened'); process.exit(0); }\nconsole.error('unknown'); process.exit(2);`;
   fs.writeFileSync(path.join(tmpBin, 'gh'), ghScript, { mode: 0o755 });
 

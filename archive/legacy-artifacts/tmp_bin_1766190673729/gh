@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+const a = process.argv.slice(2);
+if (a[0] === 'issue' && a[1] === 'close') { console.log('Closed'); process.exit(0); }
+if (a[0] === 'issue' && a[1] === 'reopen') { console.log('Reopened'); process.exit(0); }
+console.error('unknown'); process.exit(2);
