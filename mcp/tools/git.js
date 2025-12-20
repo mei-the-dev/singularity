@@ -46,7 +46,13 @@ export const createIssue = async ({ title, body }) => {
 
 export const updateIssue = async ({ issue_number, state }) => {
     try {
-        runSafe('gh', ['issue', 'edit', issue_number.toString(), '--state', state]);
+        if (state === 'closed') {
+            runSafe('gh', ['issue', 'close', String(issue_number)]);
+        } else if (state === 'open' || state === 'reopen') {
+            runSafe('gh', ['issue', 'reopen', String(issue_number)]);
+        } else {
+            return { error: `Unsupported state: ${state}` };
+        }
         return { success: true };
     } catch (e) { return { error: e.message }; }
 };
@@ -74,11 +80,35 @@ export const getDiff = async () => {
 
 export const startTask = async ({ issue_id }) => {
     try {
-        runShell('git stash');
-        runShell('git checkout main');
-        runShell('git pull');
-        runShell(`git checkout -b task/issue-${issue_id}`);
-    } catch(e) {}
+        runSafe('git', ['stash']);
+
+        // Determine default branch robustly
+        let defaultBranch = 'main';
+        try {
+            const out = runSafe('git', ['rev-parse', '--abbrev-ref', 'origin/HEAD']);
+            if (out) defaultBranch = out.replace('origin/', '');
+        } catch (e) {
+            try {
+                const out2 = runSafe('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+                if (out2 && out2 !== 'HEAD') defaultBranch = out2;
+                else {
+                    const out3 = runSafe('git', ['branch', '--show-current']);
+                    if (out3) defaultBranch = out3;
+                    else {
+                        for (const b of ['main', 'master']) {
+                            try { runSafe('git', ['rev-parse', '--verify', b]); defaultBranch = b; break; } catch (e2) {}
+                        }
+                    }
+                }
+            } catch (e2) { /* keep default */ }
+        }
+
+        runSafe('git', ['checkout', defaultBranch]);
+        try { runSafe('git', ['pull']); } catch(e) { /* ignore pull errors for local-only repos */ }
+        runSafe('git', ['checkout', '-b', `task/issue-${issue_id}`]);
+    } catch(e) {
+        return { error: e.message };
+    }
     writeContext({ currentTask: issue_id, status: "in-progress" });
     return { msg: `Switched context to issue #${issue_id}` };
 };
