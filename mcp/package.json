@@ -1,6 +1,14 @@
 {
   "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+    "test:adapter": "NODE_OPTIONS=--experimental-vm-modules jest __tests__/storybook_adapter.test.js --runInBand",
+    "test:storybook-tools": "NODE_OPTIONS=--experimental-vm-modules jest __tests__/storybook_tools.test.js --runInBand"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0"
+    "@modelcontextprotocol/sdk": "^0.6.1"
   }
 }

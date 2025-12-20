@@ -129,6 +129,18 @@ export const startTask = async ({ issue_id }) => {
             fs.writeFileSync(path.join(ctxPath, 'active.json'), JSON.stringify({ currentTask: issue_id, status: 'in-progress' }, null, 2));
         } catch (e) { /* best-effort, ignore */ }
 
+        // Start a development session and perform health checks for required services
+        try {
+            // import Ops lazily to avoid circular import issues in some environments
+            const Ops = await import('./ops.js');
+            const svcResult = await Ops.startDevelopmentSession();
+            try {
+                fs.writeFileSync(path.join(ctxPath, 'services.json'), JSON.stringify(svcResult, null, 2));
+            } catch(e) { /* ignore write errors */ }
+        } catch (e) {
+            /* best-effort: if the environment can't start services, continue */
+        }
+
     } catch(e) {
         return { error: e.message };
     }

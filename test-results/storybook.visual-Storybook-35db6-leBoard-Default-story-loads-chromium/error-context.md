@@ -1,0 +1,159 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation "Global" [ref=e6]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - link "Skip to canvas" [ref=e13] [cursor=pointer]:
+              - /url: "#storybook-preview-wrapper"
+            - link "Storybook" [ref=e15] [cursor=pointer]:
+              - /url: ./
+              - img "Storybook" [ref=e16]
+            - switch "Settings" [ref=e21] [cursor=pointer]:
+              - img [ref=e22]
+          - generic [ref=e27]:
+            - generic [ref=e29] [cursor=pointer]:
+              - button "Open onboarding guide" [ref=e33]:
+                - img [ref=e35]
+                - strong [ref=e37]: Get started
+              - generic [ref=e38]:
+                - button "Collapse onboarding checklist" [expanded] [ref=e39]:
+                  - img [ref=e40]
+                - button "15% completed" [ref=e42]:
+                  - generic [ref=e43]:
+                    - img [ref=e44]
+                    - img [ref=e46]
+                  - generic [ref=e49]: 15%
+            - list [ref=e51]:
+              - listitem [ref=e52]:
+                - button "Open onboarding guide for Render your first component" [ref=e53] [cursor=pointer]:
+                  - img [ref=e55]
+                  - generic [ref=e58]: Render your first component
+              - listitem [ref=e59]:
+                - button "Open onboarding guide for Change a story with Controls" [ref=e60] [cursor=pointer]:
+                  - img [ref=e62]
+                  - generic [ref=e65]: Change a story with Controls
+              - listitem [ref=e66]:
+                - button "Open onboarding guide for Install Vitest addon" [ref=e67] [cursor=pointer]:
+                  - img [ref=e69]
+                  - generic [ref=e72]: Install Vitest addon
+        - generic [ref=e73]: Search for components
+        - generic [ref=e74]:
+          - combobox "Search for components" [ref=e75]:
+            - generic:
+              - img
+            - searchbox "Search for components" [ref=e76]
+            - code: ⌃ K
+            - button "Tag filters" [ref=e78] [cursor=pointer]:
+              - img [ref=e79]
+          - button "Create a new story" [ref=e81] [cursor=pointer]:
+            - img [ref=e82]
+        - generic [ref=e88]:
+          - img
+          - generic [ref=e89]:
+            - button "Collapse" [expanded] [ref=e90] [cursor=pointer]:
+              - img [ref=e92]
+              - text: Environment
+            - button "Expand all" [ref=e94] [cursor=pointer]:
+              - img [ref=e95]
+          - button "BlackholeBackground" [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]:
+              - img [ref=e101]
+              - img [ref=e103]
+            - text: BlackholeBackground
+          - generic [ref=e105]:
+            - button "Collapse" [expanded] [ref=e106] [cursor=pointer]:
+              - img [ref=e108]
+              - text: Board
+            - button "Collapse all" [ref=e110] [cursor=pointer]:
+              - img [ref=e111]
+          - button "BlackholeBoard" [expanded] [ref=e114] [cursor=pointer]:
+            - generic [ref=e115]:
+              - img [ref=e117]
+              - img [ref=e119]
+            - text: BlackholeBoard
+          - link "Docs" [ref=e122] [cursor=pointer]:
+            - /url: /?path=/docs/board-blackholeboard--docs
+            - img [ref=e124]
+            - text: Docs
+          - generic [ref=e126]:
+            - button "Default" [ref=e127] [cursor=pointer]:
+              - img [ref=e129]
+              - text: Default
+            - link "Skip to canvas" [ref=e131] [cursor=pointer]:
+              - /url: "#storybook-preview-wrapper"
+          - generic [ref=e132]:
+            - button "Collapse" [expanded] [ref=e133] [cursor=pointer]:
+              - img [ref=e135]
+              - text: Molecules
+            - button "Expand all" [ref=e137] [cursor=pointer]:
+              - img [ref=e138]
+          - button "IssueCard" [ref=e141] [cursor=pointer]:
+            - generic [ref=e142]:
+              - img [ref=e144]
+              - img [ref=e146]
+            - text: IssueCard
+      - link "Storybook 10 Learn what's new in Storybook Dismiss notification" [ref=e150] [cursor=pointer]:
+        - /url: /?path=/settings/whats-new
+        - img [ref=e152]
+        - generic [ref=e154]:
+          - generic "Storybook 10" [ref=e155]
+          - generic [ref=e156]: Learn what's new in Storybook
+        - button "Dismiss notification" [ref=e157]:
+          - img [ref=e158]
+  - main [ref=e161]:
+    - region "Toolbar" [ref=e162]:
+      - heading "Toolbar" [level=2] [ref=e163]
+      - toolbar [ref=e164]:
+        - generic [ref=e165]:
+          - button "Reload story" [ref=e166] [cursor=pointer]:
+            - img [ref=e167]
+          - button "Zoom in" [ref=e169] [cursor=pointer]:
+            - img [ref=e170]
+          - button "Zoom out" [ref=e173] [cursor=pointer]:
+            - img [ref=e174]
+          - button "Reset zoom" [ref=e177] [cursor=pointer]:
+            - img [ref=e178]
+          - switch "Measure tool" [ref=e181] [cursor=pointer]:
+            - img [ref=e182]
+          - switch "Outline tool" [ref=e185] [cursor=pointer]:
+            - img [ref=e186]
+          - button "Viewport size" [ref=e188] [cursor=pointer]:
+            - img [ref=e189]
+        - generic [ref=e193]:
+          - button "Enter full screen" [ref=e194] [cursor=pointer]:
+            - img [ref=e195]
+          - button "Share" [ref=e197] [cursor=pointer]:
+            - img [ref=e198]
+          - button "Open in editor" [ref=e201] [cursor=pointer]:
+            - img [ref=e202]
+    - region "Main preview area" [ref=e205]:
+      - heading "Main preview area" [level=2] [ref=e206]
+      - generic [ref=e207]:
+        - progressbar "Content is loading..." [ref=e209]
+        - generic [ref=e210]:
+          - link "Skip to sidebar" [ref=e211] [cursor=pointer]:
+            - /url: "#board-blackholeboard--default"
+          - iframe [ref=e212]:
+            
+  - region "Addon panel" [ref=e215]:
+    - heading "Addon panel" [level=2] [ref=e216]
+    - generic [ref=e217]:
+      - generic [ref=e218]:
+        - generic [ref=e219]:
+          - button "Move addon panel to right" [ref=e220] [cursor=pointer]:
+            - img [ref=e221]
+          - button "Hide addon panel" [ref=e224] [cursor=pointer]:
+            - img [ref=e225]
+        - tablist "Available addons" [ref=e230]:
+          - tab "Controls" [selected] [ref=e231] [cursor=pointer]:
+            - generic [ref=e233]: Controls
+          - tab "Actions" [ref=e234] [cursor=pointer]:
+            - generic [ref=e236]: Actions
+          - tab "Interactions" [ref=e237] [cursor=pointer]:
+            - generic [ref=e239]: Interactions
+      - tabpanel "Controls" [ref=e240]
+```

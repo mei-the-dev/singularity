@@ -78,7 +78,7 @@ async function main() {
   cleanup(tmpBin);
 
   console.log('\nALL TESTS PASSED');
-  process.exit(0);
+  // avoid exiting the test runner in CI; just return
 }
 
 main().catch(e => {
