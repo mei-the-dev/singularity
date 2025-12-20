@@ -1,0 +1,193 @@
+To apply Storybook **perfectly** to this "Blackhole Board" project, you shouldn't just wrap the entire `BlackholeBoard` component in a story. That defeats the purpose of component-driven development.
+
+The **perfect** use case here is to **decompose** your monolith into "Atoms" and "Molecules" and use Storybook to develop, document, and visually test them in isolation. This is especially critical for your UI because of the complex visual states (priorities, issue types, hover effects) and the heavy background animations.
+
+Here is the architectural strategy and the code to achieve it.
+
+---
+
+### 1. The Strategy: Deconstruction
+
+Before writing stories, you must identify the isolated components hiding inside your `BlackholeBoard`.
+
+* **Atoms:** `PriorityBadge`, `TypeIcon`, `GhostButton`.
+* **Molecules:** `IssueCard` (The ticket), `ColumnHeader`.
+* **Organisms:** `BoardColumn` (Header + List of Cards), `IssueModal`.
+* **Environment:** `BlackholeBackground` (Isolate this to debug performance without UI clutter).
+
+### 2. Global Setup (Crucial for Tailwind)
+
+Since your project uses Tailwind and a specific dark theme (`bg-black`), you must configure `.storybook/preview.js` to replicate the "Blackhole" environment, or your transparent components will disappear against Storybook's default white background.
+
+```javascript
+// .storybook/preview.js
+import '../src/index.css'; // Import your tailwind directives here
+
+export const parameters = {
+  backgrounds: {
+    default: 'Event Horizon',
+    values: [
+      { name: 'Event Horizon', value: '#000000' }, // Match your app background
+      { name: 'Deep Space', value: '#1a1a1a' },
+    ],
+  },
+  layout: 'centered',
+};
+
+```
+
+---
+
+### 3. The "Perfect" Stories
+
+Here is how you should write the stories for the most important parts of your board.
+
+#### A. The `IssueCard` (Visual State Testing)
+
+This is your most complex interactive element. Storybook is perfect here to test the permutations of **Priority** colors and **Issue Type** icons without needing to create fake database entries.
+
+*First, extract the Card JSX from your main file into `IssueCard.jsx`.*
+
+```tsx
+// src/stories/IssueCard.stories.jsx
+import React from 'react';
+import { IssueCard } from '../components/IssueCard'; // Assume you extracted this
+
+export default {
+  title: 'Molecules/IssueCard',
+  component: IssueCard,
+  tags: ['autodocs'],
+  argTypes: {
+    priority: {
+      control: 'select',
+      options: ['low', 'medium', 'high', 'critical'],
+    },
+    type: {
+      control: 'select',
+      options: ['bug', 'feature', 'enhancement', 'docs'],
+    },
+    status: {
+      control: 'radio',
+      options: ['todo', 'inprogress', 'done'],
+    }
+  },
+};
+
+// Template for arguments
+const Template = (args) => <div className="w-64"><IssueCard {...args} /></div>;
+
+export const Default = Template.bind({});
+Default.args = {
+  id: 123,
+  title: 'Refactor Authentication',
+  assignee: 'JD',
+  points: 5,
+  priority: 'medium',
+  type: 'feature',
+};
+
+// specialized story for "Critical Bugs" to ensure they look alarming enough
+export const CriticalBug = Template.bind({});
+CriticalBug.args = {
+  ...Default.args,
+  title: 'Memory Leak in Production',
+  priority: 'critical',
+  type: 'bug',
+  points: 13,
+};
+
+```
+
+#### B. The `IssueModal` (Interaction Testing)
+
+Modals are annoying to develop because you usually have to click a button to open them every time you save a file. In Storybook, you can render the Modal in its **open** state permanently to style the content.
+
+```tsx
+// src/stories/IssueModal.stories.jsx
+import React from 'react';
+import { IssueModal } from '../components/IssueModal';
+
+export default {
+  title: 'Organisms/IssueModal',
+  component: IssueModal,
+  parameters: {
+    layout: 'fullscreen', // Modals need full screen
+  },
+};
+
+export const OpenState = () => (
+  <div className="relative h-screen bg-black/50 p-10">
+    <IssueModal 
+      isOpen={true}
+      onClose={() => console.log('Close clicked')}
+      issue={{
+        id: 404,
+        title: "Database Deadlock",
+        status: "review",
+        priority: "critical",
+        points: 8,
+        description: "This component requires careful implementation..."
+      }} 
+    />
+  </div>
+);
+
+```
+
+#### C. The `BlackholeBackground` (Performance Isolation)
+
+Your background has heavy animations (`spin-slow`, `orbit`, `pulse`). You should have a story just for the background.
+
+* **Why?** This allows you to tweak the animation CSS (speed, opacity, blur) in isolation to ensure it runs at 60fps without the DOM overhead of the rest of the board.
+
+```tsx
+// src/stories/Background.stories.jsx
+import React from 'react';
+import { BlackholeBackground } from '../components/BlackholeBackground';
+
+export default {
+  title: 'Environment/Blackhole',
+  component: BlackholeBackground,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+export const AnimationTest = () => (
+  <div className="w-full h-screen bg-black relative overflow-hidden">
+     {/* Pass mouse position props to test interactivity without moving mouse */}
+    <BlackholeBackground mousePosition={{ x: 500, y: 500 }} />
+  </div>
+);
+
+```
+
+---
+
+### 4. Implementation Checklist
+
+To get from your single file to this "Perfect" state:
+
+1. **Refactor**: Create a `components/` folder.
+* Move the `getTypeIcon` and `getPriorityColor` functions into a `utils.js` or separate hook.
+* Extract `IssueCard` (lines 109-146).
+* Extract `BlackholeBackground` (lines 58-92).
+
+
+2. **Install Storybook**:
+```bash
+npx storybook@latest init
+
+```
+
+
+3. **Use Addons**: Install `@storybook/addon-a11y`.
+* *Why?* Your color scheme is Amber on Black. Contrast ratios are risky. This addon will automatically warn you if your text is too faint (e.g., your `text-amber-700` might be too dark against black).
+
+
+
+### Why this is "Perfect"?
+
+* **Documentation:** New developers can see exactly what a "Critical Bug" looks like without hunting for one in the app.
+* **Efficiency:** You can style the Modal without clicking "Open" 500 times.
+* **Stability:** You ensure the background animation logic doesn't break when you change the board layout, because they are tested separately.

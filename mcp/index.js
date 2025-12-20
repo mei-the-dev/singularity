@@ -6,8 +6,17 @@ import * as Ops from './tools/ops.js';
 import * as Git from './tools/git.js';
 import * as Files from './tools/files.js';
 
+// Import new scaffold tools
+import { registerScaffoldComponent, registerGenerateStoryTest } from './tools/scaffold/index.js';
+
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
+  { name: "start_dev", handler: async ({ skipDocker=false }) => Ops.startDevelopmentSession({ skipDocker, runPlaywright: false }), schema: { type: "object", properties: { skipDocker:{type:"boolean"} } } },
+  { name: "start_development_session", handler: Ops.startDevelopmentSession, schema: { type: "object", properties: { skipDocker:{type:"boolean"}, runPlaywright:{type:"boolean"} } } },
+  { name: "check_services", handler: Ops.checkServices, schema: { type: "object", properties: { ports:{ type: "array", items: { type: "number" } } } } },
+  { name: "run_playwright_docker", handler: Ops.runPlaywrightInDocker, schema: { type: "object", properties: { testsPath:{type:"string"}, project:{type:"string"} } } },
+  { name: "install_playwright_binaries", handler: Ops.installPlaywrightBinaries, schema: { type: "object", properties: {} } },
+  { name: "dev_status", handler: Ops.devStatus, schema: { type: "object", properties: {} } },
   { name: "run_tests", handler: Ops.runTests, schema: { type: "object", properties: {} } },
   
   { name: "list_issues", handler: Git.listIssues, schema: { type: "object", properties: { limit:{type:"number"} } } },
@@ -25,8 +34,30 @@ const TOOLS = [
 
   { name: "search_code", handler: Files.searchCode, schema: { type: "object", properties: { query:{type:"string"} }, required:["query"] } },
   { name: "explore_file_tree", handler: Files.exploreTree, schema: { type: "object", properties: { path:{type:"string"} } } },
-  { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } }
+  { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } },
+
+  // Storybook MCP adapter tools
+  { name: "storybook_list_components", handler: async ({ baseUrl }) => (await import('./tools/storybook_adapter.js')).listComponents(baseUrl), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+  { name: "storybook_get_component_doc", handler: async ({ componentId, baseUrl }) => (await import('./tools/storybook_adapter.js')).getComponentDocumentation(componentId, baseUrl), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } },
+  { name: "storybook_list_tools", handler: async ({ baseUrl }) => (await import('./tools/storybook_adapter.js')).listTools(baseUrl), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+
+  // Official MCP-like Storybook tools
+  { name: "get_ui_building_instructions", handler: async () => (await import('./tools/get-ui-building-instructions.js')).getUiBuildingInstructions(), schema: { type: "object", properties: {} } },
+  { name: "get_story_urls", handler: async ({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }) => (await import('./tools/get-story-urls.js')).getStoryUrls({ absoluteStoryPath, exportName, explicitStoryName, baseUrl }), schema: { type: "object", properties: { absoluteStoryPath:{type:"string"}, exportName:{type:"string"}, explicitStoryName:{type:"string"}, baseUrl:{type:"string"} }, required:["absoluteStoryPath","exportName"] } },
+  { name: "list-all-components", handler: async ({ baseUrl }) => (await import('./tools/list-all-components.js')).listAllComponents({ baseUrl }), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
+  { name: "get-component-documentation", handler: async ({ componentId, baseUrl }) => (await import('./tools/get-component-documentation.js')).getComponentDocumentation({ componentId, baseUrl }), schema: { type: "object", properties: { componentId:{type:"string"}, baseUrl:{type:"string"} }, required:["componentId"] } }
 ];
+
+// Register new scaffold tools (TypeScript codegen and test injection)
+const scaffoldTools = [];
+const mockServer = {
+  tool: (name, schema, handler) => {
+    scaffoldTools.push({ name, handler, schema });
+  }
+};
+registerScaffoldComponent(mockServer);
+registerGenerateStoryTest(mockServer);
+scaffoldTools.forEach(t => TOOLS.push({ name: t.name, handler: t.handler, schema: t.schema }));
 
 const server = new Server({ name: "singularity-core", version: "21.0.0" }, { capabilities: { tools: {} } });
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS.map(t => ({ name: t.name, inputSchema: t.schema })) }));
