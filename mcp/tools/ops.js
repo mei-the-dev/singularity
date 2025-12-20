@@ -113,8 +113,8 @@ export const runTests = async () => {
     }
 };
 
-export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
-    const results = { docker: null, storybook: null, app: null, playwright: null };
+export const startDevelopmentSession = async ({ skipDocker=false, runPlaywright=false } = {}) => {
+    const results = { docker: null, storybook: null, app: null, playwright: null, playwrightRun: null };
 
     // 1) Start docker if present
     try {
@@ -139,7 +139,7 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
         results.app = await startServiceWithHealth({ command: 'npm run dev --prefix ui', port: 3000, name: 'app' });
     } catch(e) { results.app = { ok: false, error: e.message } }
 
-    // 4) Ensure Playwright is available. Prefer Docker to run Playwright (browsers preinstalled) and optionally execute tests in-container.
+    // 4) Check Playwright availability. Prefer Docker (browsers preinstalled) but don't run tests unless requested.
     try {
         try {
             execSync('docker info', { stdio: 'ignore' });
@@ -153,22 +153,20 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
             }
         } catch (e) {
             // Docker not available: fallback to local install
-            execSync('npx playwright install --with-deps', { stdio: 'ignore' });
-            results.playwright = { ok: true, via: 'local' };
+            try { execSync('npx playwright install --with-deps', { stdio: 'ignore' }); results.playwright = { ok: true, via: 'local' }; } 
+            catch (e2) { results.playwright = { ok: false, via: 'local', error: e2.message }; }
         }
 
-        // If docker is available and storybook is healthy, run Playwright tests inside the container and collect artifacts
-        try {
-            if (results.playwright && results.playwright.via === 'docker' && results.storybook && results.storybook.healthy) {
-                const image = results.playwright.image || 'mcr.microsoft.com/playwright:v1';
-                // Ensure baseline dir exists
+        // Optionally run Playwright tests inside Docker when explicitly requested
+        if (runPlaywright && results.playwright && results.playwright.via === 'docker' && results.storybook && results.storybook.healthy) {
+            try {
+                const image = results.playwright.image || 'mcr.microsoft.com/playwright:latest';
                 try { execSync('mkdir -p ui/e2e/tests/baselines'); } catch(e) {}
-                // Run the tests inside the Playwright container using host networking so it can reach Storybook on localhost
                 execSync(`docker run --rm --network host -v "${process.cwd()}:/work" -w /work ${image} bash -lc \"export STORYBOOK_URL=http://localhost:6006 && npx playwright test ui/e2e/tests --project=chromium --config=playwright.config.js --reporter=list\"`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
                 results.playwrightRun = { ok: true, via: 'docker' };
+            } catch (e) {
+                results.playwrightRun = { ok: false, via: 'docker', error: e.message };
             }
-        } catch (e) {
-            results.playwrightRun = { ok: false, via: 'docker', error: e.message };
         }
     } catch(e) { results.playwright = { ok: false, error: e.message } }
 
@@ -183,4 +181,29 @@ export const checkServices = async ({ ports = [6006, 3000] } = {}) => {
         res[p] = await isPortOpen(p);
     }
     return res;
+};
+
+export const runPlaywrightInDocker = async ({ testsPath = 'ui/e2e/tests', project = 'chromium' } = {}) => {
+    try {
+        const image = 'mcr.microsoft.com/playwright:latest';
+        execSync(`mkdir -p ui/e2e/tests/baselines`);
+        execSync(`./bin/playwright-docker.sh ${testsPath} ${project}`, { stdio: 'inherit', timeout: 15 * 60 * 1000 });
+        return { ok: true };
+    } catch (e) { return { ok: false, error: e.message }; }
+};
+
+export const installPlaywrightBinaries = async () => {
+    try {
+        execSync('chmod +x ./scripts/install-playwright.sh || true');
+        const out = execSync('./scripts/install-playwright.sh', { encoding: 'utf8' });
+        return { ok: true, output: out };
+    } catch (e) { return { ok: false, error: e.message, stderr: (e.stderr || '').toString() }; }
+};
+
+export const devStatus = async () => {
+    try {
+        const p = path.resolve(process.cwd(), '.task-context', 'services.json');
+        if (fs.existsSync(p)) return { ok: true, services: JSON.parse(fs.readFileSync(p, 'utf8')) };
+        return { ok: false, message: 'No services context file found' };
+    } catch (e) { return { ok: false, error: e.message }; }
 };
