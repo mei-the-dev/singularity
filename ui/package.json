@@ -9,6 +9,7 @@
     "build-storybook": "storybook build -o storybook-static",
     "storybook:serve": "npx serve -s storybook-static -l 9001",
     "playwright:install": "npx playwright install --with-deps",
+    "playwright:install:chromium": "npx playwright install chromium",
     "playwright:test": "npx playwright test --config=./e2e/playwright.config.ts"
   },
   "dependencies": {

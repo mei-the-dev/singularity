@@ -41,12 +41,12 @@ jobs:
           PORT=3000 nohup npm --prefix ui run start > ui/logs/ci-start.log 2>&1 &
           sleep 5
           ps aux | head -n 5
-      - name: Install Playwright browsers (capture logs)
+      - name: Install Playwright browsers (chromium - capture logs)
         env:
           PLAYWRIGHT_BROWSERS_PATH: ui/.cache/ms-playwright
         run: |
           mkdir -p ui/logs ui/.cache/ms-playwright
-          PLAYWRIGHT_BROWSERS_PATH=ui/.cache/ms-playwright npm --prefix ui run playwright:install > ui/logs/playwright-install.log 2>&1 || (echo "Playwright install failed - printing log" && sed -n '1,200p' ui/logs/playwright-install.log && false)
+          PLAYWRIGHT_BROWSERS_PATH=ui/.cache/ms-playwright npm --prefix ui run playwright:install:chromium > ui/logs/playwright-install.log 2>&1 || (echo "Playwright install failed - printing log" && sed -n '1,200p' ui/logs/playwright-install.log && false)
       - name: Debug: Playwright cache + node modules
         run: |
           echo "Playwright cache size:" && du -sh ui/.cache/ms-playwright || true
