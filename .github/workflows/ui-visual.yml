@@ -14,6 +14,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ui/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('ui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-browsers-
       - name: Install dependencies (including dev)
         run: |
           NODE_ENV=development npm --prefix ui install --no-audit --prefer-offline --include=dev
@@ -27,8 +41,17 @@ jobs:
           PORT=3000 nohup npm --prefix ui run start > ui/logs/ci-start.log 2>&1 &
           sleep 5
           ps aux | head -n 5
-      - name: Install Playwright browsers
-        run: npm --prefix ui run playwright:install
+      - name: Install Playwright browsers (capture logs)
+        run: |
+          mkdir -p ui/logs
+          npm --prefix ui run playwright:install > ui/logs/playwright-install.log 2>&1 || (echo "Playwright install failed - printing log" && sed -n '1,200p' ui/logs/playwright-install.log && false)
+      - name: Debug: Playwright cache + node modules
+        run: |
+          echo "Playwright cache size:" && du -sh ~/.cache/ms-playwright || true
+          echo "Contents of Playwright cache (top):" && ls -la ~/.cache/ms-playwright | head -n 20 || true
+          echo "Node modules size:" && du -sh ui/node_modules || true
+          echo "node_modules (top):" && ls -la ui/node_modules | head -n 40 || true
+          echo "Playwright install tail log:" && tail -n 200 ui/logs/playwright-install.log || true
       - name: Run Playwright E2E tests
         run: npm --prefix ui run playwright:test --config=./e2e/playwright.config.ts
         env:
