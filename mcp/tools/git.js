@@ -105,7 +105,12 @@ export const startTask = async ({ issue_id }) => {
 
         runSafe('git', ['checkout', defaultBranch]);
         try { runSafe('git', ['pull']); } catch(e) { /* ignore pull errors for local-only repos */ }
-        runSafe('git', ['checkout', '-b', `task/issue-${issue_id}`]);
+        try {
+            runSafe('git', ['checkout', '-b', `task/issue-${issue_id}`]);
+        } catch (e) {
+            // If branch already exists, switch to it
+            try { runSafe('git', ['checkout', `task/issue-${issue_id}`]); } catch (e2) { throw e; }
+        }
     } catch(e) {
         return { error: e.message };
     }
