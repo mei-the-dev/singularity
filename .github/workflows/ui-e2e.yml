@@ -23,8 +23,8 @@ jobs:
       - name: Install UI dependencies
         run: npm ci --prefix ui
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps --prefix ui
+      - name: Install Playwright browsers (non-interactive)
+        run: npm --prefix ui run playwright:install
 
       - name: Start UI dev server
         run: |
