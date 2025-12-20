@@ -82,7 +82,11 @@ export const startTask = async ({ issue_id }) => {
     // Execute git commands explicitly against MCP_REPO_OVERRIDE when present to avoid ambiguity
     const targetRepo = process.env.MCP_REPO_OVERRIDE || REPO_ROOT;
     try {
-        // Ensure target is a git repository
+        // Ensure target is a git repository (require .git folder to exist)
+        if (!fs.existsSync(path.join(targetRepo, '.git'))) {
+            return { error: 'Not a git repository' };
+        }
+        // double-check with git command
         try { runSafe('git', ['-C', targetRepo, 'rev-parse', '--is-inside-work-tree']); } catch (e) { return { error: 'Not a git repository' }; }
 
         runSafe('git', ['-C', targetRepo, 'stash']);
