@@ -75,7 +75,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS.map
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const tool = TOOLS.find(t => t.name === req.params.name);
   if (!tool) throw new Error("Unknown tool");
-  try { return { content: [{ type: "text", text: JSON.stringify(await tool.handler(req.params.arguments)) }] }; } 
-  catch(e) { return { content: [{ type: "text", text: "Error: " + e.message }], isError: true }; }
+
+  // Watchdog: warn if a tool handler is taking too long (indicates a possible blocking op).
+  const WATCHDOG_MS = 20000;
+  let warned = false;
+  const timer = setTimeout(() => { warned = true; console.warn(`MCP: tool handler '${tool.name}' running longer than ${WATCHDOG_MS}ms`); }, WATCHDOG_MS);
+
+  try {
+    const res = await tool.handler(req.params.arguments);
+    clearTimeout(timer);
+    if (warned) console.warn(`MCP: tool handler '${tool.name}' has finished after a long run.`);
+    return { content: [{ type: "text", text: JSON.stringify(res) }] };
+  } catch(e) {
+    clearTimeout(timer);
+    return { content: [{ type: "text", text: "Error: " + e.message }], isError: true };
+  }
 });
 server.connect(new StdioServerTransport()).catch(console.error);

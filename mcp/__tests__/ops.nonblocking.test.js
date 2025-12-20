@@ -1,7 +1,5 @@
 import { startService } from '../tools/ops.js';
 
-jest.setTimeout(10000);
-
 describe('Non-blocking startService', () => {
   test('startService returns quickly with PID and log', async () => {
     const start = Date.now();
