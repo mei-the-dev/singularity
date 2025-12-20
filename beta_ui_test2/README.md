@@ -70,12 +70,62 @@ function App() {
 }
 ```
 
-## Features
+## GitHub Integration
 
+The board fetches real issues from a GitHub repository using the GitHub API.
+
+### Authentication
+
+**Recommended: Use GitHub CLI to get your token:**
+```bash
+# Install GitHub CLI: https://cli.github.com/
+gh auth login
+gh auth token  # Copy this token
+```
+
+**Then set as environment variable:**
+```bash
+export REACT_APP_GITHUB_TOKEN=your_token_here
+```
+
+### Setup
+
+1. **Get GitHub token** (see Authentication section above)
+
+2. **Configure repository**:
+   ```bash
+   export REACT_APP_GITHUB_REPO_OWNER=your_username
+   export REACT_APP_GITHUB_REPO_NAME=your_repo
+   ```
+
+3. **Run the app**:
+   ```bash
+   npm install
+   npm run storybook
+   ```
+
+### Label Mapping
+
+Issues are categorized using GitHub labels:
+
+- **Status**: `status:backlog`, `status:todo`, `status:inprogress`, `status:review`, `status:done`
+- **Priority**: `priority:critical`, `priority:high`, `priority:medium`, `priority:low`
+- **Type**: `type:bug`, `type:feature`, `type:enhancement`, `type:design`, `type:docs`, `type:test`, `type:infrastructure`
+- **Story Points**: `points:5` (any number)
+
+Example issue with labels: `status:inprogress`, `priority:high`, `type:feature`, `points:8`
+
+### Features
+
+- Real-time data from GitHub
+- Automatic categorization based on labels
+- Direct links to GitHub issues
+- Loading and error states
+- Fallback to sample data if API fails
 - Fully responsive design
-- Animated blackhole background
-- Interactive issue cards
+- Animated blackhole background with mouse interaction
+- Interactive issue cards with hover effects
 - Modal issue details
 - Search and filter functionality
 - TypeScript support
-- Storybook integration
+- Storybook integration for component development

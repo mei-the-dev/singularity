@@ -15,7 +15,7 @@ interface BoardProps {
 const Board: React.FC<BoardProps> = ({ columns, issues, onIssueClick }) => {
   return (
     <div className="p-6">
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4" data-testid="kanban-board">
         {columns.map((column) => (
           <Column
             key={column.id}

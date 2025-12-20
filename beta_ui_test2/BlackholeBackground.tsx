@@ -6,7 +6,7 @@ interface BlackholeBackgroundProps {
 
 const BlackholeBackground: React.FC<BlackholeBackgroundProps> = ({ mousePosition }) => {
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none" data-testid="blackhole-background">
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black"></div>
 
       {/* Central Blackhole */}

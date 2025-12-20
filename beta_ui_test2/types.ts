@@ -6,4 +6,6 @@ export interface Issue {
   priority: 'critical' | 'high' | 'medium' | 'low';
   points: number;
   type: 'bug' | 'feature' | 'enhancement' | 'design' | 'docs' | 'test' | 'infrastructure';
+  url?: string;
+  body?: string;
 }

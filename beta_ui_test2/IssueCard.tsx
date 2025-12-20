@@ -31,27 +31,28 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onClick }) => {
     <div
       onClick={() => onClick(issue)}
       className="bg-gradient-to-br from-amber-950/40 to-amber-900/20 border border-amber-800/30 rounded-lg p-3 cursor-pointer transition-all duration-300 hover:border-amber-600/50 hover:shadow-lg hover:shadow-amber-900/30 hover:-translate-y-1 group"
+      data-testid="issue-card"
     >
       <div className="flex items-start justify-between mb-2">
-        <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(issue.priority)}`}>
+        <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(issue.priority)}`} data-testid="priority-badge">
           {issue.priority}
         </span>
         <div className="flex items-center gap-1">
-          <span className="text-xs text-amber-600">{getTypeIcon(issue.type)}</span>
-          <span className="text-xs text-amber-700">#{issue.id}</span>
+          <span className="text-xs text-amber-600" data-testid="type-icon">{getTypeIcon(issue.type)}</span>
+          <span className="text-xs text-amber-700" data-testid="issue-id">#{issue.id}</span>
         </div>
       </div>
 
-      <h4 className="text-sm text-amber-100 mb-3 group-hover:text-amber-50 transition-colors">
+      <h4 className="text-sm text-amber-100 mb-3 group-hover:text-amber-50 transition-colors" data-testid="issue-title">
         {issue.title}
       </h4>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-[10px] font-medium text-black shadow-md">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-[10px] font-medium text-black shadow-md" data-testid="assignee-avatar">
             {issue.assignee}
           </div>
-          <div className="flex items-center gap-1 text-xs text-amber-700">
+          <div className="flex items-center gap-1 text-xs text-amber-700" data-testid="story-points">
             <Clock className="w-3 h-3" />
             <span>{issue.points}pt</span>
           </div>

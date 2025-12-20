@@ -6,3 +6,4 @@ export { default as Board } from './Board';
 export { default as IssueDetailModal } from './IssueDetailModal';
 export { default as BlackholeBoard } from './BlackholeBoard';
 export * from './types';
+export * from './githubApi';

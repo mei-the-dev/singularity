@@ -15,16 +15,16 @@ interface ColumnProps {
 const Column: React.FC<ColumnProps> = ({ column, issues, onIssueClick }) => {
   return (
     <div className="flex flex-col">
-      <div className={`bg-gradient-to-br ${column.color} border border-amber-900/30 rounded-t-xl px-4 py-3 backdrop-blur-sm`}>
+      <div className={`bg-gradient-to-br ${column.color} border border-amber-900/30 rounded-t-xl px-4 py-3 backdrop-blur-sm`} data-testid={`column-header-${column.id}`}>
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-amber-100">{column.title}</h3>
-          <span className="text-xs text-amber-600 bg-amber-950/50 px-2 py-1 rounded-full">
+          <span className="text-xs text-amber-600 bg-amber-950/50 px-2 py-1 rounded-full" data-testid={`column-count-${column.id}`}>
             {issues.length}
           </span>
         </div>
       </div>
 
-      <div className="bg-black/40 border-x border-b border-amber-900/30 rounded-b-xl p-3 space-y-3 min-h-[600px] backdrop-blur-sm">
+      <div className="bg-black/40 border-x border-b border-amber-900/30 rounded-b-xl p-3 space-y-3 min-h-[600px] backdrop-blur-sm" data-testid={`column-issues-${column.id}`}>
         {issues.map((issue) => (
           <IssueCard key={issue.id} issue={issue} onClick={onIssueClick} />
         ))}
