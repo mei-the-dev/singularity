@@ -64,7 +64,8 @@ jobs:
       - name: Run Playwright E2E tests (capture logs + html report)
         run: |
           mkdir -p ui/logs ui/playwright-report
-          npx playwright test --config=./e2e/playwright.config.ts --reporter=list,html > ui/logs/playwright-run.log 2>&1 || (echo "Playwright tests failed; tailing log" && sed -n '1,300p' ui/logs/playwright-run.log && false)
+          # Run Playwright from the ui package so config path is resolved correctly
+          npm --prefix ui run playwright:test -- --reporter=list,html > ui/logs/playwright-run.log 2>&1 || (echo "Playwright tests failed; tailing log" && sed -n '1,300p' ui/logs/playwright-run.log && false)
         env:
           E2E_BASE_URL: http://localhost:3000
       - name: Optional Build Storybook (non-fatal)
