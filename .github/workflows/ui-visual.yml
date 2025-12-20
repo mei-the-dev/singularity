@@ -31,7 +31,7 @@ jobs:
         run: npm --prefix ui run playwright:test --config=./e2e/playwright.config.ts
         env:
           E2E_BASE_URL: http://localhost:3000
-      - name: Optional: Build Storybook (attempt, but don't fail job)
+      - name: Optional Build Storybook (non-fatal)
         run: |
           set -e
           npm --prefix ui run build-storybook || echo "Storybook build failed; skipping visual snapshot stage"
