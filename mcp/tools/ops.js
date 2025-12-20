@@ -75,7 +75,8 @@ export const startDevelopmentSession = async ({ skipDocker=false } = {}) => {
 
     // 2) Ensure Storybook (port 6006)
     try {
-        results.storybook = await startServiceWithHealth({ command: 'npm run storybook', port: 6006, name: 'storybook' });
+        // Start storybook in CI/non-interactive mode to avoid CLI prompts when port is occupied
+        results.storybook = await startServiceWithHealth({ command: 'npm run storybook -- --ci --port 6006', port: 6006, name: 'storybook' });
     } catch(e) { results.storybook = { ok: false, error: e.message } }
 
     // 3) Ensure App (Next) -- default port 3000
