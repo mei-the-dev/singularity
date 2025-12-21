@@ -5,7 +5,7 @@ export interface BlackholeBackgroundProps { className?: string }
 export const BlackholeBackground: React.FC<BlackholeBackgroundProps> = ({ className='' }) => {
   // Purely presentational: uses CSS variables for parallax offsets set on a parent container
   return (
-    <div className={`fixed inset-0 overflow-hidden pointer-events-none ${className}`} data-testid="blackhole-bg">
+    <div className={`fixed inset-0 overflow-hidden pointer-events-none h-screen ${className}`} data-testid="blackhole-bg">
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black" />
 
       <div 
