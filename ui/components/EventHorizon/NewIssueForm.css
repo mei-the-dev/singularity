@@ -1,0 +1,6 @@
+.nif-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:1000 }
+.nif-modal { background: var(--surface,#fff); padding: 16px; width: min(680px, 96%); border-radius:8px }
+.nif-header { display:flex; align-items:center; justify-content:space-between }
+.nif-title{ margin:0 }
+.nif-input, .nif-textarea { width:100%; box-sizing:border-box; margin-bottom:8px }
+.nif-submit { background:var(--accent,#0366d6); color:white; border:none; padding:8px 12px; border-radius:6px }
