@@ -42,60 +42,13 @@ const BlackholeBoard: React.FC = () => {
     { id: 7, title: 'Migrate to new CI/CD pipeline', status: 'done', assignee: 'MK', priority: 'high', points: 8, type: 'infrastructure' },
   ];
 
-  const getPriorityColor = (priority: string) => {
-    switch(priority) {
-      case 'critical': return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'high': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
-      case 'low': return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
-    }
-  };
 
-  const getTypeIcon = (type: string) => {
-    switch(type) {
-      case 'bug': return <AlertCircle className="w-3 h-3" />;
-      case 'feature': return <Plus className="w-3 h-3" />;
-      case 'enhancement': return <GitBranch className="w-3 h-3" />;
-      default: return <GitCommit className="w-3 h-3" />;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-amber-100 overflow-hidden relative" data-testid="blackhole-board">
-      {/* Animated Blackhole Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black"></div>
-        
-        {/* Central Blackhole */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96"
-          style={{
-            transform: 'translate(-50%, -50%) translate(calc((var(--mouse-x, 50vw) - 50vw)/50), calc((var(--mouse-y, 50vh) - 50vh)/50))'
-          }}
-        >
-          <div className="absolute inset-0 rounded-full bg-black blur-xl animate-pulse"></div>
-          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-amber-900/40 via-amber-700/30 to-transparent animate-spin-slow"></div>
-          <div className="absolute inset-8 rounded-full bg-gradient-to-br from-amber-800/50 via-amber-600/40 to-transparent animate-spin-slower"></div>
-          <div className="absolute inset-12 rounded-full bg-gradient-to-br from-amber-700/60 via-amber-500/50 to-transparent animate-spin-reverse"></div>
-          <div className="absolute inset-16 rounded-full bg-black shadow-2xl"></div>
-        </div>
+      {/* Reuse the shared BlackholeBackground component */}
+      <BlackholeBackground />
 
-        {/* Orbiting Particles */}
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-amber-400 rounded-full animate-orbit"
-            style={{
-              left: '50%',
-              top: '50%',
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${10 + i}s`,
-              opacity: Math.random() * 0.7 + 0.3
-            }}
-          ></div>
-        ))}
-      </div>
 
       {/* Main Content */}
       <div className="relative z-10">
@@ -238,22 +191,6 @@ const BlackholeBoard: React.FC = () => {
           from { transform: rotate(360deg); }
           to { transform: rotate(0deg); }
         }
-        @keyframes orbit {
-          0% {
-            transform: translate(-50%, -50%) rotate(0deg) translateX(200px) rotate(0deg);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-          }
-          90% {
-            opacity: 1;
-          }
-          100% {
-            transform: translate(-50%, -50%) rotate(360deg) translateX(200px) rotate(-360deg);
-            opacity: 0;
-          }
-        }
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -267,18 +204,6 @@ const BlackholeBoard: React.FC = () => {
             opacity: 1;
             transform: translateY(0);
           }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-spin-slower {
-          animation: spin-slower 30s linear infinite;
-        }
-        .animate-spin-reverse {
-          animation: spin-reverse 25s linear infinite;
-        }
-        .animate-orbit {
-          animation: orbit linear infinite;
         }
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
