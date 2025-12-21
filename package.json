@@ -7,6 +7,8 @@
     "install:all": "npm install",
     "bootstrap": "npm install",
     "test:all": "npm --workspace=mcp run test && npm --workspace=ui run test",
+    "test:visual": "npm --workspace=ui run test:e2e",
+    "test:visual:update": "npm --workspace=ui run test:e2e:update",
     "dev": "npm --workspace=ui run dev",
     "build": "npm --workspace=ui run build",
     "start": "npm --workspace=ui run start",

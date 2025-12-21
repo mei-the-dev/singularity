@@ -5,7 +5,7 @@ echo "🎭 Setting up Playwright..."
 
 if command -v docker &> /dev/null; then
   echo "✓ Docker detected - pulling Playwright image..."
-  docker pull mcr.microsoft.com/playwright:v1.48.0-jammy || true
+  docker pull mcr.microsoft.com/playwright:v1.57.0-jammy || true
   echo "✓ Docker image ready"
 else
   echo "⚠️  Docker not found - installing Playwright locally..."
