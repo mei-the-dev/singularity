@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Plus, Search, Filter, GitBranch } from 'lucide-react';
 import BlackholeBackground from '../BlackholeBackground/BlackholeBackground';
+import ColumnHeader from '../ColumnHeader/ColumnHeader';
+import NewIssueButton from '../NewIssueButton/NewIssueButton';
 import IssueCard from '../IssueCard/IssueCard';
 import type { Issue } from '../../types';
 
@@ -66,10 +68,7 @@ const BlackholeBoard: React.FC = () => {
                 </div>
               </div>
               
-              <button className="px-6 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg shadow-amber-900/50 hover:shadow-amber-800/70 hover:scale-105">
-                <Plus className="w-4 h-4" />
-                <span className="text-sm font-medium text-black">New Issue</span>
-              </button>
+              <NewIssueButton />
             </div>
 
             {/* Search & Filters */}
