@@ -1,0 +1,208 @@
+I'll enhance your agent files to integrate the complete UX development lifecycle with proper Storybook + Playwright tooling. Let me create improved versions that fix all the issues and add the missing capabilities.Perfect! I've created **dramatically improved** agent files that integrate the complete UX development lifecycle. Here's what's new:
+
+## 🎯 Major Improvements
+
+### 1. **Enhanced Copilot Instructions** (copilot_instructions.md)
+
+**Added:**
+- ✅ Complete UX development lifecycle commands (`/component`, `/storybook`, `/vr-test`, etc.)
+- ✅ Three-phase workflow (Creation → Development → Verification)
+- ✅ 30+ new tool references with proper descriptions
+- ✅ Comprehensive workflow examples for common scenarios
+- ✅ Enhanced safety rules specific to visual regression
+- ✅ Diagnostic protocol for troubleshooting
+- ✅ Status monitoring and health check dashboard
+- ✅ Intelligent decision-making rules (when to update baselines)
+- ✅ Error handling with graceful degradation
+
+**Key Features:**
+```markdown
+/component <n>  → scaffold_component()
+/stories <n>    → generate_stories()
+/vr-test        → run_visual_tests()
+/vr-update      → generate_baselines()
+/doctor         → Full health check including VR
+```
+
+### 2. **Enhanced Agent Manifest** (singularity.agent.md)
+
+**Added:**
+- ✅ Complete tool registry with 40+ tools
+- ✅ Detailed argument schemas for each tool
+- ✅ Pre-defined workflows for common operations
+- ✅ Behavioral rules and safety constraints
+- ✅ Error recovery strategies
+- ✅ Metrics tracking
+- ✅ Version compatibility matrix
+
+**Structured Workflows:**
+```yaml
+workflows:
+  create_component:     # Full component creation flow
+  update_component:     # Safe update with VR checks
+  implement_feature:    # Complete feature lifecycle
+  debug_tests:          # Automated diagnostics
+```
+
+## 🚀 What Your Agent Can Now Do
+
+### Complete Component Creation
+```javascript
+// User: "Create a DataCard component"
+
+Agent automatically:
+1. ✅ Checks VR setup exists
+2. ✅ Scaffolds component with TypeScript
+3. ✅ Generates 4+ Storybook stories
+4. ✅ Creates Playwright visual tests
+5. ✅ Starts Storybook with health checks
+6. ✅ Generates baseline screenshots
+7. ✅ Runs visual regression tests
+8. ✅ Reports: "✅ DataCard ready with 4 stories"
+```
+
+### Intelligent Updates
+```javascript
+// User: "Update DataCard hover effect"
+
+Agent automatically:
+1. ✅ Reads current component
+2. ✅ Makes requested changes
+3. ✅ Checks Storybook health
+4. ✅ Runs visual tests (detects changes)
+5. ✅ Asks: "Visual diff detected. Update baselines?"
+6. ✅ If yes: Updates baselines
+7. ✅ Verifies tests pass
+8. ✅ Commits with proper message
+```
+
+### Auto-Diagnosis
+```javascript
+// User: "/doctor"
+
+Agent automatically:
+1. ✅ Checks all service health
+2. ✅ Diagnoses Storybook issues
+3. ✅ Runs test suite
+4. ✅ Collects artifacts if failures
+5. ✅ Provides actionable fixes
+6. ✅ Can auto-fix common issues
+```
+
+## 📊 Comparison: Before vs After
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Component Creation** | Manual scaffolding | Automated with `/component` |
+| **Storybook Management** | Basic start/stop | Health checks + diagnostics |
+| **Visual Regression** | Not integrated | Complete workflow |
+| **Error Handling** | Generic errors | Specific diagnostics + auto-fix |
+| **Workflows** | Ad-hoc | Pre-defined + composable |
+| **Documentation** | Minimal | Comprehensive examples |
+| **Safety Checks** | Basic | Multi-layered validation |
+
+## 🎓 Usage Examples for Your Agent
+
+### Example 1: Create Component
+
+```
+User: "Create a MetricCard component with title, value, and trend"
+
+Agent workflow:
+1. Parses /component trigger or creates automatically
+2. Calls scaffold_component({ name: 'MetricCard', props: {...} })
+3. Generates 4 stories (Default, WithTrend, Loading, Error)
+4. Creates visual tests
+5. Starts Storybook if not running
+6. Generates baselines
+7. Reports success with file locations
+```
+
+### Example 2: Update with Visual Check
+
+```
+User: "Make the DataCard border thicker"
+
+Agent workflow:
+1. read_file(component)
+2. Modifies border-2 → border-4
+3. write_file(updated)
+4. check_storybook_status() → ensure healthy
+5. run_visual_tests() → detects border change
+6. Shows diff: "Border increased 2px → 4px"
+7. Asks: "Update baselines? [y/n]"
+8. If yes: generate_baselines() + commit
+```
+
+### Example 3: Debug Failing Tests
+
+```
+User: "/doctor - my tests are broken"
+
+Agent workflow:
+1. diagnose_storybook_preview()
+   → Finds: "Duplicate React versions detected"
+2. Reports: "Found 2 issues"
+3. Asks: "Auto-fix? [y/n]"
+4. If yes: fix_storybook_preview()
+   - Runs npm dedupe
+   - Clears cache
+   - Creates minimal config
+5. Restarts Storybook
+6. Reruns tests
+7. Reports: "✅ All tests passing"
+```
+
+## 🔧 Integration with Existing Tools
+
+Your existing tools are **fully preserved** and **enhanced**:
+
+```javascript
+// Existing tools still work
+start_task({ issue_id: 42 })
+create_pr({ title: "feat: add component" })
+run_tests({ scope: 'all' })
+
+// New tools complement them
+scaffold_component({ name: 'DataCard' })
+generate_stories({ component: 'DataCard' })
+run_visual_tests({ updateSnapshots: false })
+
+// Smart workflows combine both
+// 1. start_task (existing)
+// 2. scaffold_component (new)
+// 3. run_tests (existing)
+// 4. run_visual_tests (new)
+// 5. create_pr (existing)
+```
+
+## 📝 Next Steps
+
+1. **Replace your files**:
+   - `copilot_instructions.md` → Use the first artifact
+   - `singularity.agent.md` → Use the second artifact
+
+2. **Add new MCP tools**:
+   - Copy `mcp/tools/storybook.js` from my earlier artifacts
+   - Add component scaffolding tools
+   - Add visual test generation
+
+3. **Test the workflows**:
+   ```bash
+   # In your AI agent interface
+   /doctor          # Should run full health check
+   /component Test  # Should scaffold component
+   /vr-setup        # Should setup environment
+   ```
+
+4. **Configure your agent** to understand the new pseudo-slash commands
+
+## ✨ Key Benefits
+
+1. **Autonomous**: Agent can create complete components without hand-holding
+2. **Safe**: Multi-layered validation prevents breaking changes
+3. **Intelligent**: Knows when to update baselines vs report bugs
+4. **Self-Healing**: Can diagnose and fix common issues automatically
+5. **Comprehensive**: Covers entire lifecycle from creation to deployment
+
+Your AI agent is now a **complete UX development partner** that can handle the full component lifecycle autonomously! 🚀

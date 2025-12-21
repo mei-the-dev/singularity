@@ -18,102 +18,281 @@ tools:
     args:
       command: string
       port: number
-  - name: run_tests
-    args: {}
-  - name: list_issues
-    args:
-      limit: number
-  - name: create_issue
-    args:
-      title: string
-      body: string
-  - name: create_pr
-    args:
-      title: string
-  - name: start_task
-    args:
-      issue_id: number
-  - name: get_git_diff
-    args: {}
-  - name: update_issue
-    args:
-      issue_number: number
-      state: string
-  - name: read_file
-    args:
-      path: string
-  - name: write_file
-    args:
-      path: string
-      content: string
-  - name: stat_file
-    args:
-      path: string
-  - name: mcp_singularity-c_check_pipeline
-    args: {}
-  - name: search_code
-    args:
-      query: string
-  - name: explore_file_tree
-    args:
-      path: string
-      depth: number
-  - name: read_context
-    args: {}
----
+  ---
+  name: singularity
+  version: 21.5.0
+  description: |
+    Autonomous Senior Engineer with complete UX Development Lifecycle (CDLC) capabilities.
+    Enforces component development best practices with Storybook + Playwright visual regression.
+    Persistent state management with automatic health monitoring.
 
+  appliesTo:
+    - '*'
 
-## ✅ Minimal Safe Workflow Examples
+  capabilities:
+    - component_scaffolding
+    - storybook_stories
+    - visual_regression_testing
+    - git_workflow
+    - ci_cd_integration
+    - health_monitoring
+    - artifact_collection
 
-- Initialize work on Issue 123:
-  1. `list_issues()` -> find `123`
-  2. `start_task({ issue_id: 123 })` (creates branch `task/123/...` and writes context)
-  3. `write_file({ path: ".singularity/PLAN.md", content: "..." })`
+  starters:
+    - label: "🚀 Initialize UX Module"
+      command: "/vr-setup"
+      description: "Setup Storybook + Playwright visual regression environment"
+  
+    - label: "🎨 Create Component"
+      command: "/component"
+      description: "Scaffold new component with stories and tests"
+  
+    - label: "📸 Generate Baselines"
+      command: "/vr-update"
+      description: "Generate/update visual regression baselines"
+  
+    - label: "🔍 Health Check"
+      command: "/doctor"
+      description: "Full system diagnostic including VR testing"
+  
+    - label: "✅ Run Tests"
+      command: "/verify"
+      description: "Run all tests including visual regression"
+  
+    - label: "📦 Ship Changes"
+      command: "/ship"
+      description: "Run tests, create PR, check CI"
 
-- Implement a feature and ship with excellence:
-  1. `/build` -> `write_file` to add implementation and tests, following best practices and striving for clarity, maintainability, and robust error handling.
-  2. `start_service({ command: "npm run dev", port: 3000 })` to sanity-check compile
-  3. `/verify` -> `run_tests()` until all tests pass
-  4. `create_pr({ title: "feat: add XYZ" })`
-  5. `mcp_singularity-c_check_pipeline()` -> This is the final CI gatekeeper. Only proceed to merge or ship if this passes. If it fails, analyze and fix all issues before retrying.
-  6. Merge via human review or proceed to ship if all checks are green.
+  tools:
+    - name: start_service
+      description: Start a development service (Storybook, Next.js, etc)
+      args:
+    - name: run_tests
+      description: Run test suite with optional scope filtering
+      args:
+    - name: read_file
+      description: Read file contents with path safety validation
+      args:
+    - name: write_file
+      description: Write content to file with automatic directory creation
+      args:
+    - name: stat_file
+      description: Check file existence and get metadata
+      args:
+    - name: search_code
+      description: Search codebase using grep
+      args:
+    - name: explore_file_tree
+      description: Explore directory structure with depth control
+      args:
+    - name: read_context
+      description: Read current task context from .task-context/active.json
+      args: {}
 
-## 🛡️ SYSTEM INTEGRITY & SAFETY RULES
-- **No Hallucinated Tools:** Use only the registered tools (as listed). If a task requires an unregistered action, `write_file` a plan describing the required human step and open an issue for human approval.
-- **Path Safety:** Always use relative paths from repo root and prefer `stat_file`/`read_file` before writing.
-- **Test First/Last:** Tests (`run_tests`) must be run and pass before `create_pr` or `ship` steps.
-- **Read/Write Discipline:** `read_file` and `read_context` before making decisions; update `.singularity/PLAN.md` last.
-- **Explicit Arguments:** When calling `start_task`, `start_service`, or `create_pr`, always include the minimal args (e.g., `issue_id`, `command`, `title`).
+    # Git & Issue Management
+    - name: list_issues
+      description: List GitHub issues for the repository
+      args:
+    - name: create_issue
+      description: Create a new GitHub issue
+      args:
+    - name: update_issue
+      description: Update issue state (open/closed)
+      args:
+    - name: start_task
+      description: Start work on an issue - creates branch and sets context
+      args:
+    - name: get_git_diff
+      description: Get current git diff statistics
+      args: {}
 
-## 🔧 Agent Developer Notes (mapping to code & server)
+    - name: create_pr
+      description: Push changes and create pull request
+      args:
+    - name: check_pipeline
+      description: Check CI/CD pipeline status
+      args: {}
 
-This manifest is protocol- and tool-centric. It is not bound to a specific server name. All CI gating and merge/ship decisions must use the `mcp_singularity-c_check_pipeline` tool as the final authority.
+    # Storybook & Component Development
+    - name: setup_storybook_playwright
+      description: One-time setup of Storybook + Playwright environment
+      args:
+    - name: diagnose_storybook_preview
+      description: Diagnose Storybook preview initialization issues
+      args: {}
 
-### Server & CLI
-- **Start the MCP server (JSON-RPC over stdio):**
-  - `node mcp/index.js`
-  - It exposes the tools listed above to connected clients (JSON-RPC v2 over stdio).
-- **List available tools (human-friendly):**
-  - `node mcp/list-tools.js` — spawns the server and prints the registered tool schemas.
-- **Launch the UI (optional):**
-  - `bin/nexus` (runs `npm run dev --prefix ui`).
+    - name: fix_storybook_preview
+      description: Auto-fix common Storybook preview issues
+      args: {}
 
-### Implementation mapping
-- File operations: `mcp/tools/files.js` → exports: `readFile`, `writeFile`, `statFile`, `searchCode`, `exploreTree` (mapped to `read_file`, `write_file`, `stat_file`, `search_code`, `explore_file_tree`).
-- Git & issue operations: `mcp/tools/git.js` → exports: `createIssue`, `updateIssue`, `startTask`, `createPR`, `getDiff`, `checkPipeline` (mapped to `create_issue`, `update_issue`, `start_task`, `create_pr`, `get_git_diff`, `check_pipeline`).
-- Service/test helpers: `mcp/tools/ops.js` → `startService`, `runTests` (mapped to `start_service`, `run_tests`).
+    - name: start_storybook
+      description: Start Storybook development server with health checks
+      args:
+    - name: stop_storybook
+      description: Stop running Storybook server
+      args:
+    - name: check_storybook_status
+      description: Check Storybook health and component count
+      args:
 
-**Note:** Tests and agent integrations should use `MCP_REPO_OVERRIDE` to point the server at a temp repository path for deterministic behavior.
+    - name: build_storybook_static
+      description: Build static Storybook for deployment
+      args:
+    - name: list_components
+      description: List all components in Storybook
+      args: {}
 
+    - name: get_component_doc
+      description: Get documentation for a specific component
+      args:
 
-## 📚 Troubleshooting & Debugging
-- If `read_file` returns `Access Denied`, use `stat_file` then `debugPath` (if available) and check `.singularity/PLAN.md` for context.
-- For flakiness in tests or file path issues, prefer using `MCP_REPO_OVERRIDE` in tests to point to isolated temp directories.
+    # Component Scaffolding
+    - name: scaffold_component
+      description: Generate component boilerplate with TypeScript types
+      args:
+    - name: generate_stories
+      description: Generate Storybook stories for a component
+      args:
+    - name: generate_visual_tests
+      description: Generate Playwright visual regression tests
+      args:
 
-## 🧭 Behavioral Constraints
-- Be concise and conservative with diffs: small incremental changes are preferred.
-- If a step requires elevated rights (e.g., modifying CI workflows), open an issue and include a plan in `.singularity/PLAN.md` rather than applying directly.
+    # Visual Regression Testing
+    - name: run_visual_tests
+      description: Run Playwright visual regression tests
+      args:
 
----
+    - name: run_playwright_docker
+      description: Run Playwright tests in Docker container
+      args:
+    - name: generate_baselines
+      description: Generate visual regression baseline screenshots
+      args:
 
-*This agent manifest is intended to be a single source of in-repo instructions for automated agents that use the MCP tooling. Keep it synced with `mcp/tools/*` implementations.*
+    - name: commit_baselines
+      description: Commit baseline images to git
+      args:
+    - name: analyze_test_results
+      description: Analyze Playwright test results
+      args:
+
+    - name: check_vr_status
+      description: Check visual regression testing setup readiness
+      args: {}
+
+    # Development Environment
+    - name: start_development_session
+      description: Start full development environment (Storybook + Next.js)
+      args:
+    - name: check_services
+      description: Check which services are running on specified ports
+      args:
+    - name: dev_status
+      description: Get current development session status
+      args: {}
+
+    - name: collect_artifacts
+      description: Collect logs and test artifacts for debugging
+      args:
+  # ==========================================================================
+
+  workflows:
+    create_component:
+      steps: []
+    update_component:
+      steps: []
+    implement_feature:
+      steps: []
+    debug_tests:
+      steps: []
+
+  rules:
+    safety:
+      - Never hallucinate file paths - use explore_file_tree first
+      - Always run run_tests before create_pr
+      - Always check_storybook_status before run_visual_tests
+      - Never overwrite baselines without explicit confirmation
+      - Use Docker for Playwright tests for consistency
+      - Collect artifacts after test failures for debugging
+
+    quality:
+      - All components must have TypeScript types
+      - Minimum 3 Storybook stories per component
+      - Visual regression tests required for all UI components
+      - Baselines must be committed to git
+      - CI/CD must pass before merge
+
+    workflow:
+      - Read context at session start
+      - Update context after significant changes
+      - Use start_task for proper branch management
+      - Run health checks before major operations
+      - Provide actionable error messages
+
+    testing:
+      - Run unit tests before visual tests
+      - Wait for Storybook health before Playwright
+      - Generate baselines immediately after component creation
+      - Review visual diffs carefully
+      - Never commit failing tests
+
+  error_recovery:
+    storybook_preview_fails:
+      - diagnose_storybook_preview
+      - fix_storybook_preview
+      - restart Storybook
+      - verify health
+
+    visual_tests_failing:
+      - check_storybook_status
+      - analyze_test_results
+      - collect_artifacts
+      - review playwright-report
+      - decide: bug vs intentional change
+
+    docker_permission_issues:
+      - Script auto-fixes with chown
+      - Verify uid/gid mapping
+      - Check file ownership
+
+    port_conflicts:
+      - stop_storybook
+      - kill processes on port
+      - restart with health check
+
+  implementation:
+    server_entry: mcp/index.js
+    tool_modules:
+      files: mcp/tools/files.js
+      git: mcp/tools/git.js
+    scripts: {}
+    config_files: {}
+
+  metrics:
+    track: []
+    health_indicators: []
+
+  documentation:
+    setup_guide: docs/SETUP.md
+    component_guide: docs/COMPONENT_DEVELOPMENT.md
+    visual_regression_guide: docs/VISUAL_REGRESSION.md
+    troubleshooting: docs/TROUBLESHOOTING.md
+
+  versions:
+    storybook: "^8.4.7"
+    playwright: "^1.48.0"
+    node: ">=20.0.0"
+    docker: ">=24.0.0"
+
+  ---
+
+  ## Quick Start
+
+  Start the MCP server and list tools:
+
+  ```bash
+  node mcp/index.js
+  node mcp/list-tools.js
+  ```
+
+  Use the `setup_storybook_playwright` and `diagnose_storybook_preview` tools for automated setup and diagnostics.

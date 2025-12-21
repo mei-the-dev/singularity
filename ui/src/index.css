@@ -1,0 +1,16 @@
+/* Minimal styles for Storybook test components */
+:root{
+  --muted-bg:#0f1720;
+  --muted-border:#374151;
+  --muted-text:#e6eef8;
+}
+.testcard-root{
+  background:var(--muted-bg);
+  border:1px solid var(--muted-border);
+  border-radius:12px;
+  padding:16px;
+  display:inline-block;
+  color:var(--muted-text);
+}
+.testcard-title{font-size:13px;color:#9aa6b3;margin:0 0 8px 0}
+.testcard-value{font-size:28px;font-weight:700}

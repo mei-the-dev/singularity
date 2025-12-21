@@ -1,0 +1,43 @@
+{
+  "name": "singularity",
+  "version": "21.0.0",
+  "private": true,
+  "workspaces": ["mcp", "ui"],
+  "scripts": {
+    "install:all": "npm install",
+    "bootstrap": "npm install",
+    "test:all": "npm --workspace=mcp run test && npm --workspace=ui run test",
+    "test:visual": "npm --workspace=ui run test:e2e",
+    "test:visual:update": "npm --workspace=ui run test:e2e:update",
+    "dev": "npm --workspace=ui run dev",
+    "build": "npm --workspace=ui run build",
+    "start": "npm --workspace=ui run start",
+    "storybook": "npm --workspace=ui run storybook",
+    "build-storybook": "npm --workspace=ui run build-storybook",
+    "mcp": "npm --workspace=ui run mcp",
+    "mcp:check": "node mcp/tools/check_storybook_mcp.js",
+    "verify:nested-node-modules": "node .scripts/check-nested-node-modules.js"
+  },
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.1.0",
+    "framer-motion": "latest",
+    "lucide-react": "latest",
+    "@playwright/test": "^1.57.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@storybook/react-vite": "^10.1.10",
+    "storybook": "^10.1.10",
+    "@types/node": "25.0.3",
+    "@types/react": "19.2.7",
+    "autoprefixer": "^10",
+    "esbuild": "^0.27.2",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5",
+    "vite": "^5.1.0",
+    "vitest": "^1.0.0"
+  }
+}
