@@ -1,0 +1,1 @@
+{"v":5,"entries":{"test-testcard--default":{"type":"story","subtype":"story","id":"test-testcard--default","name":"Default","title":"Test/TestCard","importPath":"./components/TestCard/TestCard.stories.tsx","componentPath":"./components/TestCard/TestCard.tsx","tags":["dev","test","autodocs"],"exportName":"Default"}}}
