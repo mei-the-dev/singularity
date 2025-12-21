@@ -97,14 +97,7 @@ const BlackholeBoard: React.FC = () => {
           <div className="grid grid-cols-5 gap-4">
             {columns.map((column) => (
               <div key={column.id} className="flex flex-col">
-                <div className={`bg-gradient-to-br ${column.color} border border-amber-900/30 rounded-t-xl px-4 py-3 backdrop-blur-sm`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium text-amber-100">{column.title}</h3>
-                    <span className="text-xs text-amber-600 bg-amber-950/50 px-2 py-1 rounded-full">
-                      {issues.filter(i => i.status === column.id).length}
-                    </span>
-                  </div>
-                </div>
+                <ColumnHeader title={column.title} count={issues.filter(i => i.status === column.id).length} />
 
                 <div className="bg-black/40 border-x border-b border-amber-900/30 rounded-b-xl p-3 space-y-3 min-h-[600px] backdrop-blur-sm">
                   {issues
