@@ -2,10 +2,7 @@
   "name": "singularity",
   "version": "21.0.0",
   "private": true,
-  "workspaces": [
-    "mcp",
-    "ui"
-  ],
+  "workspaces": ["mcp", "ui"],
   "scripts": {
     "install:all": "npm install",
     "bootstrap": "npm install",
@@ -19,20 +16,19 @@
     "mcp:check": "node mcp/tools/check_storybook_mcp.js",
     "verify:nested-node-modules": "node .scripts/check-nested-node-modules.js"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
   "dependencies": {
-    "@playwright/test": "^1.57.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.1.0",
     "framer-motion": "latest",
     "lucide-react": "latest",
-    "next": "14.1.0",
-    "react": "^18",
-    "react-dom": "^18"
+    "@playwright/test": "^1.57.0"
   },
   "devDependencies": {
-    "@storybook/addon-mcp": "^0.1.6",
-    "@storybook/mcp": "^0.1.1",
+    "concurrently": "^8.2.2",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/addon-links": "^8.4.7",
     "@storybook/react-vite": "^10.1.10",
     "@types/node": "25.0.3",
     "@types/react": "19.2.7",
@@ -40,6 +36,8 @@
     "esbuild": "^0.27.2",
     "postcss": "^8",
     "tailwindcss": "^3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^5.1.0",
+    "vitest": "^1.0.0"
   }
 }
