@@ -1,0 +1,16 @@
+.issue-card {
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius, 8px);
+  padding: 12px;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #0f1720);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  max-width: 420px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+.issue-card__header { margin-bottom: 8px }
+.issue-card__title { margin: 0; font-size: 14px; color: var(--color-text, inherit) }
+.issue-card__meta { font-size: 12px; color: var(--color-muted, #9aa6b2) }
+.issue-card__body { margin-top: 8px; font-size: 13px; color: var(--color-text, inherit) }
+.issue-card__footer { margin-top: 10px; font-size: 12px; color: var(--color-text, inherit) }
+.issue-card__footer strong { color: var(--color-accent, #f472b6) }

@@ -1,0 +1,30 @@
+// Ensure the theme/preview decorator is loaded by Storybook
+import './preview.theme'
+
+// noop export so Storybook treats this as a preview module
+export {}
+import type { Preview } from '@storybook/react';
+import '../app/globals.css';
+
+const preview: Preview = {
+  parameters: {
+    controls: { matchers: { color: /(background|color)$/i, date: /Date$/ } },
+    backgrounds: {
+      default: 'event-horizon',
+      values: [
+        { name: 'event-horizon', value: '#000000' },
+        { name: 'deep-space', value: '#0f0f0f' }
+      ]
+    },
+    layout: 'centered'
+  },
+  decorators: [
+    (Story) => (
+      <div className="text-amber-100 antialiased selection:bg-amber-500/30 bg-black min-h-screen p-6">
+        <Story />
+      </div>
+    )
+  ]
+};
+
+export default preview;
