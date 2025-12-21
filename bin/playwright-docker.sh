@@ -47,7 +47,7 @@ if [ "${UPDATE_SNAPSHOTS:-}" = "1" ]; then
   EXTRA_SNAPSHOT_ARG="--update-snapshots"
 fi
 
-echo "Docker run command: docker run --rm --network host -v \"${WORKDIR}:/work\" -w /work \"${IMAGE}\" bash -lc 'export STORYBOOK_URL=http://localhost:6006 && ${PRE_CMD} npx playwright test ${TEST_PATH} --project=${PROJECT} --config=${CONFIG_ARG} --reporter=list ${EXTRA_SNAPSHOT_ARG}'"
+echo "Docker run command: docker run --rm --network host -v \"${WORKDIR}:/work\" -w /work \"${IMAGE}\" bash -lc 'export STORYBOOK_URL=\"${STORYBOOK_URL:-http://localhost:6006}\" && ${PRE_CMD} npx playwright test ${TEST_PATH} --project=${PROJECT} --config=${CONFIG_ARG} --reporter=list ${EXTRA_SNAPSHOT_ARG}'"
 # Run container as current host user to avoid root-owned artifacts. Fall back to 1000:1000 if id isn't available
 UID_VAL=1000
 GID_VAL=1000
@@ -57,7 +57,7 @@ if command -v id >/dev/null 2>&1; then
 fi
 USER_ARG="-u ${UID_VAL}:${GID_VAL}"
 
-echo "Docker run command: docker run --rm ${USER_ARG} --network host -v \"${WORKDIR}:/work\" -w /work \"${IMAGE}\" bash -lc 'export STORYBOOK_URL=http://localhost:6006 && ${PRE_CMD} npx playwright test ${TEST_PATH} --project=${PROJECT} --config=${CONFIG_ARG} --reporter=list ${EXTRA_SNAPSHOT_ARG}'"
+echo "Docker run command: docker run --rm ${USER_ARG} --network host -v \"${WORKDIR}:/work\" -w /work \"${IMAGE}\" bash -lc 'export STORYBOOK_URL=\"${STORYBOOK_URL:-http://localhost:6006}\" && ${PRE_CMD} npx playwright test ${TEST_PATH} --project=${PROJECT} --config=${CONFIG_ARG} --reporter=list ${EXTRA_SNAPSHOT_ARG}'"
 
 # Ensure test-results files are writable by target user: run a short chown as root in a throwaway container
 if [ -d "${WORKDIR}/test-results" ]; then

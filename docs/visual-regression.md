@@ -31,3 +31,20 @@ Add deterministic visual regression testing for Storybook components using Playw
 ## Implementation Notes
 - Use `UPDATE_SNAPSHOTS=1` env var passed into `bin/playwright-docker.sh` to toggle update mode.
 - Bundle baselines along with test-results and docker logs into `.task-context/artifacts/` as a tar.gz with `metadata.json`.
+
+### Note about `@storybook/addon-essentials`
+
+Storybook v10 does not have a published `@storybook/addon-essentials@^10.x` package. If your `.storybook/main.*` references `@storybook/addon-essentials` you may see install errors. The recommended workaround is to include the specific addons you need instead of `addon-essentials` — for example:
+
+- `@storybook/addon-actions`
+- `@storybook/addon-controls`
+- `@storybook/addon-backgrounds`
+
+In this repository we replaced `@storybook/addon-essentials` with the explicit addons above and installed compatible versions. To reproduce locally:
+
+```bash
+# add specific addons (the repo uses versions compatible with the current setup)
+npm --workspace=ui install --save-dev @storybook/addon-actions@^9.0.8 @storybook/addon-controls@^9.0.8 @storybook/addon-backgrounds@^9.0.8 --legacy-peer-deps
+```
+
+This avoids the `No matching version found for @storybook/addon-essentials@^10.1.10` error when installing Storybook-related packages.
