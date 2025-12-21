@@ -1,26 +1,32 @@
 {
   "name": "singularity-ui",
-  "version": "20.0.0",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview",
+    "storybook": "npx storybook dev -p 6006",
+    "storybook:ci": "npx storybook dev --ci -p 6006",
+    "build-storybook": "npx storybook build -o storybook-static",
+    "test": "vitest",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ci": "npx playwright test --reporter=list",
+    "test:e2e:update": "npx playwright test --update-snapshots"
   },
   "dependencies": {
-    "framer-motion": "latest",
-    "lucide-react": "latest",
-    "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@types/node": "25.0.3",
-    "@types/react": "19.2.7",
-    "autoprefixer": "^10",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "typescript": "^5"
+    "@playwright/test": "^1.57.0",
+    "@storybook/addon-mcp": "^0.1.6",
+    "@storybook/mcp": "^0.1.1",
+    "@storybook/react-vite": "^10.1.10",
+    "@vitejs/plugin-react": "^5.1.2",
+    "typescript": "^5",
+    "vite": "^5.1.0",
+    "vitest": "^1.0.0"
   }
 }
