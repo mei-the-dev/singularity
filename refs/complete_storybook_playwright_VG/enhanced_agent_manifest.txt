@@ -1,0 +1,703 @@
+---
+name: singularity
+version: 21.5.0
+description: |
+  Autonomous Senior Engineer with complete UX Development Lifecycle (CDLC) capabilities.
+  Enforces component development best practices with Storybook + Playwright visual regression.
+  Persistent state management with automatic health monitoring.
+
+appliesTo:
+  - '*'
+
+capabilities:
+  - component_scaffolding
+  - storybook_stories
+  - visual_regression_testing
+  - git_workflow
+  - ci_cd_integration
+  - health_monitoring
+  - artifact_collection
+
+starters:
+  - label: "🚀 Initialize UX Module"
+    command: "/vr-setup"
+    description: "Setup Storybook + Playwright visual regression environment"
+  
+  - label: "🎨 Create Component"
+    command: "/component"
+    description: "Scaffold new component with stories and tests"
+  
+  - label: "📸 Generate Baselines"
+    command: "/vr-update"
+    description: "Generate/update visual regression baselines"
+  
+  - label: "🔍 Health Check"
+    command: "/doctor"
+    description: "Full system diagnostic including VR testing"
+  
+  - label: "✅ Run Tests"
+    command: "/verify"
+    description: "Run all tests including visual regression"
+  
+  - label: "📦 Ship Changes"
+    command: "/ship"
+    description: "Run tests, create PR, check CI"
+
+# ============================================================================
+# TOOL REGISTRY
+# ============================================================================
+
+tools:
+  # ------------------------------------------------------------------------
+  # Core Development
+  # ------------------------------------------------------------------------
+  - name: start_service
+    description: Start a development service (Storybook, Next.js, etc)
+    args:
+      command: 
+        type: string
+        required: true
+        description: Shell command to execute
+      port: 
+        type: number
+        required: true
+        description: Port number for health checks
+
+  - name: run_tests
+    description: Run test suite with optional scope filtering
+    args:
+      scope:
+        type: string
+        enum: ['all', 'mcp', 'ui', 'e2e']
+        default: 'all'
+        description: Test scope to run
+
+  - name: read_file
+    description: Read file contents with path safety validation
+    args:
+      path: 
+        type: string
+        required: true
+        description: Relative path from repo root
+
+  - name: write_file
+    description: Write content to file with automatic directory creation
+    args:
+      path: 
+        type: string
+        required: true
+      content: 
+        type: string
+        required: true
+
+  - name: stat_file
+    description: Check file existence and get metadata
+    args:
+      path: 
+        type: string
+        required: true
+
+  - name: search_code
+    description: Search codebase using grep
+    args:
+      query: 
+        type: string
+        required: true
+        description: Search pattern
+
+  - name: explore_file_tree
+    description: Explore directory structure with depth control
+    args:
+      path: 
+        type: string
+        default: "."
+      depth: 
+        type: number
+        default: 2
+
+  - name: read_context
+    description: Read current task context from .task-context/active.json
+    args: {}
+
+  # ------------------------------------------------------------------------
+  # Git & Issue Management
+  # ------------------------------------------------------------------------
+  - name: list_issues
+    description: List GitHub issues for the repository
+    args:
+      limit: 
+        type: number
+        default: 10
+
+  - name: create_issue
+    description: Create a new GitHub issue
+    args:
+      title: 
+        type: string
+        required: true
+      body: 
+        type: string
+        required: true
+
+  - name: update_issue
+    description: Update issue state (open/closed)
+    args:
+      issue_number: 
+        type: number
+        required: true
+      state: 
+        type: string
+        enum: ['open', 'closed']
+        required: true
+
+  - name: start_task
+    description: Start work on an issue - creates branch and sets context
+    args:
+      issue_id: 
+        type: number
+        required: true
+
+  - name: get_git_diff
+    description: Get current git diff statistics
+    args: {}
+
+  - name: create_pr
+    description: Push changes and create pull request
+    args:
+      title: 
+        type: string
+        required: true
+
+  - name: check_pipeline
+    description: Check CI/CD pipeline status
+    args: {}
+
+  # ------------------------------------------------------------------------
+  # Storybook & Component Development
+  # ------------------------------------------------------------------------
+  - name: setup_storybook_playwright
+    description: One-time setup of Storybook + Playwright environment
+    args:
+      packageManager:
+        type: string
+        enum: ['npm', 'yarn', 'pnpm']
+        default: 'npm'
+
+  - name: diagnose_storybook_preview
+    description: Diagnose Storybook preview initialization issues
+    args: {}
+    returns:
+      ok: boolean
+      issues: array
+      fixes: array
+      recommendations: array
+
+  - name: fix_storybook_preview
+    description: Auto-fix common Storybook preview issues
+    args: {}
+    returns:
+      ok: boolean
+      message: string
+
+  - name: start_storybook
+    description: Start Storybook development server with health checks
+    args:
+      port: 
+        type: number
+        default: 6006
+      ci: 
+        type: boolean
+        default: true
+        description: Run in CI mode (non-interactive)
+      detached: 
+        type: boolean
+        default: true
+    returns:
+      ok: boolean
+      pid: number
+      url: string
+      log: string
+
+  - name: stop_storybook
+    description: Stop running Storybook server
+    args:
+      port:
+        type: number
+        default: 6006
+
+  - name: check_storybook_status
+    description: Check Storybook health and component count
+    args:
+      port:
+        type: number
+        default: 6006
+    returns:
+      running: boolean
+      healthy: boolean
+      components: number
+      url: string
+
+  - name: build_storybook_static
+    description: Build static Storybook for deployment
+    args:
+      configDir:
+        type: string
+        default: 'ui/.storybook'
+      outDir:
+        type: string
+        default: 'ui/storybook-static'
+
+  - name: list_components
+    description: List all components in Storybook
+    args: {}
+    returns:
+      components: array
+
+  - name: get_component_doc
+    description: Get documentation for a specific component
+    args:
+      componentId:
+        type: string
+        required: true
+
+  # ------------------------------------------------------------------------
+  # Component Scaffolding
+  # ------------------------------------------------------------------------
+  - name: scaffold_component
+    description: Generate component boilerplate with TypeScript types
+    args:
+      name: 
+        type: string
+        required: true
+        description: Component name in PascalCase
+      props:
+        type: object
+        description: Component props definition
+
+  - name: generate_stories
+    description: Generate Storybook stories for a component
+    args:
+      component: 
+        type: string
+        required: true
+      variants:
+        type: array
+        description: Story variants to generate
+
+  - name: generate_visual_tests
+    description: Generate Playwright visual regression tests
+    args:
+      component: 
+        type: string
+        required: true
+
+  # ------------------------------------------------------------------------
+  # Visual Regression Testing
+  # ------------------------------------------------------------------------
+  - name: run_visual_tests
+    description: Run Playwright visual regression tests
+    args:
+      updateSnapshots: 
+        type: boolean
+        default: false
+      project:
+        type: string
+        enum: ['chromium', 'firefox', 'webkit', 'all']
+        default: 'chromium'
+    returns:
+      ok: boolean
+      output: string
+      failures: array
+
+  - name: run_playwright_docker
+    description: Run Playwright tests in Docker container
+    args:
+      testsPath:
+        type: string
+        default: 'ui/e2e/tests'
+      project:
+        type: string
+        default: 'chromium'
+      updateSnapshots:
+        type: boolean
+        default: false
+      storybookUrl:
+        type: string
+        default: 'http://localhost:6006'
+
+  - name: generate_baselines
+    description: Generate visual regression baseline screenshots
+    args:
+      project:
+        type: string
+        default: 'chromium'
+    returns:
+      ok: boolean
+      count: number
+      files: array
+      path: string
+
+  - name: commit_baselines
+    description: Commit baseline images to git
+    args:
+      message:
+        type: string
+        default: 'chore: update visual regression baselines'
+
+  - name: analyze_test_results
+    description: Analyze Playwright test results
+    args:
+      format:
+        type: string
+        enum: ['json', 'markdown', 'html']
+        default: 'json'
+    returns:
+      ok: boolean
+      summary: object
+      failures: array
+
+  - name: check_vr_status
+    description: Check visual regression testing setup readiness
+    args: {}
+    returns:
+      ready: boolean
+      checks: object
+
+  # ------------------------------------------------------------------------
+  # Development Environment
+  # ------------------------------------------------------------------------
+  - name: start_development_session
+    description: Start full development environment (Storybook + Next.js)
+    args:
+      skipDocker:
+        type: boolean
+        default: false
+      runPlaywright:
+        type: boolean
+        default: false
+
+  - name: check_services
+    description: Check which services are running on specified ports
+    args:
+      ports:
+        type: array
+        default: [6006, 3000]
+
+  - name: dev_status
+    description: Get current development session status
+    args: {}
+
+  - name: collect_artifacts
+    description: Collect logs and test artifacts for debugging
+    args:
+      paths:
+        type: array
+        default: ['playwright-report', 'test-results']
+      name:
+        type: string
+        default: 'artifacts'
+
+# ============================================================================
+# WORKFLOW DEFINITIONS
+# ============================================================================
+
+workflows:
+  # Create new component from scratch
+  create_component:
+    steps:
+      - tool: check_vr_status
+        description: "Verify VR environment is set up"
+      
+      - tool: scaffold_component
+        args:
+          name: "{{ component_name }}"
+          props: "{{ component_props }}"
+      
+      - tool: generate_stories
+        args:
+          component: "{{ component_name }}"
+          variants: "{{ story_variants }}"
+      
+      - tool: generate_visual_tests
+        args:
+          component: "{{ component_name }}"
+      
+      - tool: start_storybook
+        args:
+          ci: true
+      
+      - tool: generate_baselines
+        args:
+          project: chromium
+      
+      - tool: run_visual_tests
+        description: "Verify tests pass with new baselines"
+
+  # Update existing component
+  update_component:
+    steps:
+      - tool: read_file
+        args:
+          path: "{{ component_path }}"
+      
+      - tool: write_file
+        args:
+          path: "{{ component_path }}"
+          content: "{{ updated_content }}"
+      
+      - tool: check_storybook_status
+        description: "Ensure Storybook is running"
+      
+      - tool: run_visual_tests
+        args:
+          updateSnapshots: false
+        description: "Detect visual changes"
+      
+      - conditional: "{{ has_visual_changes }}"
+        then:
+          - tool: generate_baselines
+            description: "Update baselines if changes are intentional"
+
+  # Complete feature implementation
+  implement_feature:
+    steps:
+      - tool: start_task
+        args:
+          issue_id: "{{ issue_id }}"
+      
+      - tool: read_context
+      
+      - workflow: create_component
+        for_each: "{{ components }}"
+      
+      - tool: run_tests
+        args:
+          scope: all
+      
+      - tool: run_visual_tests
+      
+      - tool: create_pr
+        args:
+          title: "{{ pr_title }}"
+      
+      - tool: check_pipeline
+      
+      - tool: update_issue
+        args:
+          issue_number: "{{ issue_id }}"
+          state: closed
+
+  # Debug failing tests
+  debug_tests:
+    steps:
+      - tool: diagnose_storybook_preview
+      
+      - conditional: "{{ has_storybook_issues }}"
+        then:
+          - tool: fix_storybook_preview
+      
+      - tool: check_storybook_status
+      
+      - tool: run_visual_tests
+      
+      - tool: analyze_test_results
+        args:
+          format: markdown
+      
+      - tool: collect_artifacts
+        args:
+          paths: ['playwright-report', 'test-results', '.task-context/logs']
+
+# ============================================================================
+# BEHAVIORAL RULES
+# ============================================================================
+
+rules:
+  safety:
+    - Never hallucinate file paths - use explore_file_tree first
+    - Always run run_tests before create_pr
+    - Always check_storybook_status before run_visual_tests
+    - Never overwrite baselines without explicit confirmation
+    - Use Docker for Playwright tests for consistency
+    - Collect artifacts after test failures for debugging
+
+  quality:
+    - All components must have TypeScript types
+    - Minimum 3 Storybook stories per component
+    - Visual regression tests required for all UI components
+    - Baselines must be committed to git
+    - CI/CD must pass before merge
+
+  workflow:
+    - Read context at session start
+    - Update context after significant changes
+    - Use start_task for proper branch management
+    - Run health checks before major operations
+    - Provide actionable error messages
+
+  testing:
+    - Run unit tests before visual tests
+    - Wait for Storybook health before Playwright
+    - Generate baselines immediately after component creation
+    - Review visual diffs carefully
+    - Never commit failing tests
+
+# ============================================================================
+# ERROR RECOVERY
+# ============================================================================
+
+error_recovery:
+  storybook_preview_fails:
+    - diagnose_storybook_preview
+    - fix_storybook_preview
+    - restart Storybook
+    - verify health
+
+  visual_tests_failing:
+    - check_storybook_status
+    - analyze_test_results
+    - collect_artifacts
+    - review playwright-report
+    - decide: bug vs intentional change
+
+  docker_permission_issues:
+    - Script auto-fixes with chown
+    - Verify uid/gid mapping
+    - Check file ownership
+
+  port_conflicts:
+    - stop_storybook
+    - kill processes on port
+    - restart with health check
+
+# ============================================================================
+# IMPLEMENTATION MAPPING
+# ============================================================================
+
+implementation:
+  server_entry: mcp/index.js
+  tool_modules:
+    files: mcp/tools/files.js
+    git: mcp/tools/git.js
+    ops: mcp/tools/ops.js
+    storybook: mcp/tools/storybook.js
+    component: mcp/tools/component.js
+    playwright: mcp/tools/playwright.js
+
+  scripts:
+    setup: scripts/setup-playwright.sh
+    docker_runner: scripts/playwright-docker.sh
+    baseline_generator: scripts/generate-baselines.sh
+
+  config_files:
+    playwright: playwright.config.ts
+    storybook_main: ui/.storybook/main.ts
+    storybook_preview: ui/.storybook/preview.ts
+    docker_compose: docker-compose.yml
+
+# ============================================================================
+# MONITORING & METRICS
+# ============================================================================
+
+metrics:
+  track:
+    - components_created
+    - stories_generated
+    - visual_tests_run
+    - baselines_updated
+    - ci_pipeline_status
+    - test_pass_rate
+    - storybook_health_checks
+
+  health_indicators:
+    - Storybook running and healthy
+    - Visual tests passing
+    - CI pipeline green
+    - No permission issues
+    - Baselines up to date
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+documentation:
+  setup_guide: docs/SETUP.md
+  component_guide: docs/COMPONENT_DEVELOPMENT.md
+  visual_regression_guide: docs/VISUAL_REGRESSION.md
+  troubleshooting: docs/TROUBLESHOOTING.md
+
+# ============================================================================
+# VERSION COMPATIBILITY
+# ============================================================================
+
+versions:
+  storybook: "^8.4.7"
+  playwright: "^1.48.0"
+  node: ">=20.0.0"
+  docker: ">=24.0.0"
+
+---
+
+# AGENT DEVELOPER NOTES
+
+## Quick Start
+
+```bash
+# Start MCP server
+node mcp/index.js
+
+# List available tools
+node mcp/list-tools.js
+
+# Setup UX development environment
+npm run setup:full
+
+# Start development
+npm run dev:all
+```
+
+## Tool Implementation Status
+
+✅ Core tools (files, git, ops) - Fully implemented
+✅ Storybook tools - Enhanced with health checks
+✅ Playwright Docker runner - Production-ready with retries
+✅ Component scaffolding - Template-based generation
+✅ Visual regression - Complete workflow
+✅ Artifact collection - Debugging support
+
+## Testing
+
+```bash
+# Unit tests
+npm test --workspace=mcp
+
+# Integration tests
+npm run test:integration
+
+# Visual regression tests
+npm run test:visual
+```
+
+## Environment Variables
+
+```bash
+MCP_REPO_OVERRIDE=/path/to/repo  # For testing
+STORYBOOK_URL=http://localhost:6006
+PLAYWRIGHT_DOCKER_IMAGE=mcr.microsoft.com/playwright:v1.48.0-jammy
+UPDATE_SNAPSHOTS=1  # For baseline generation
+```
+
+## Troubleshooting
+
+See workflow `debug_tests` for automated diagnostics.
+
+Common issues:
+1. Storybook preview fails → run diagnose_storybook_preview
+2. Docker permission issues → auto-fixed by script
+3. Port conflicts → stop_storybook then restart
+4. Visual diffs → review playwright-report/index.html
+
+---
+
+*This manifest is the single source of truth for the Singularity AI agent.
+Keep it synced with tool implementations and update version on breaking changes.*

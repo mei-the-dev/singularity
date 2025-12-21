@@ -19,6 +19,9 @@
     "mcp:check": "node mcp/tools/check_storybook_mcp.js",
     "verify:nested-node-modules": "node .scripts/check-nested-node-modules.js"
   },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
   "dependencies": {
     "@playwright/test": "^1.57.0",
     "framer-motion": "latest",

@@ -5,6 +5,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import * as Ops from './tools/ops.js';
 import * as Git from './tools/git.js';
 import * as Files from './tools/files.js';
+import * as Storybook from './tools/storybook.js';
 
 const TOOLS = [
   { name: "start_service", handler: Ops.startService, schema: { type: "object", properties: { command:{type:"string"}, port:{type:"number"} }, required:["command"] } },
@@ -26,6 +27,17 @@ const TOOLS = [
   { name: "search_code", handler: Files.searchCode, schema: { type: "object", properties: { query:{type:"string"} }, required:["query"] } },
   { name: "explore_file_tree", handler: Files.exploreTree, schema: { type: "object", properties: { path:{type:"string"} } } },
   { name: "read_context", handler: Files.readContext, schema: { type: "object", properties: {} } },
+
+  // Storybook & Visual Regression tools
+  { name: "diagnose_storybook_preview", handler: Storybook.diagnoseStorybookPreview, schema: { type: "object", properties: { port:{type:"number"} } } },
+  { name: "fix_storybook_preview", handler: Storybook.fixStorybookPreview, schema: { type: "object", properties: {} } },
+  { name: "start_storybook", handler: Storybook.startStorybook, schema: { type: "object", properties: { port:{type:"number"}, ci:{type:"boolean"}, detached:{type:"boolean"} } } },
+  { name: "stop_storybook", handler: Storybook.stopStorybook, schema: { type: "object", properties: { port:{type:"number"} } } },
+  { name: "check_storybook_status", handler: Storybook.checkStorybookStatus, schema: { type: "object", properties: { port:{type:"number"} } } },
+  { name: "run_playwright_docker", handler: Storybook.runPlaywrightDocker, schema: { type: "object", properties: { testsPath:{type:"string"}, project:{type:"string"}, updateSnapshots:{type:"boolean"}, storybookUrl:{type:"string"} } } },
+  { name: "generate_baselines", handler: Storybook.generateBaselines, schema: { type: "object", properties: { project:{type:"string"} } } },
+  { name: "commit_baselines", handler: Storybook.commitBaselines, schema: { type: "object", properties: { message:{type:"string"} } } },
+  { name: "analyze_test_results", handler: Storybook.analyzeTestResults, schema: { type: "object", properties: { format:{type:"string"} } } },
 
   // Storybook MCP adapter tools
   { name: "storybook_list_components", handler: async ({ baseUrl }) => (await import('./tools/storybook_adapter.js')).listComponents(baseUrl), schema: { type: "object", properties: { baseUrl:{type:"string"} } } },
