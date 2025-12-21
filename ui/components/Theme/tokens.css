@@ -1,0 +1,16 @@
+/* Theme tokens for BlackholeBoard */
+:root {
+  --bh-surface: #0b0b0b;
+  --bh-bg: #000000;
+  --bh-text: #f8f8f2;
+  --bh-muted: #666666;
+  --bh-accent: #ffb86c;
+  --bh-shadow: rgba(0,0,0,0.6);
+  --motion-fast: 120ms;
+  --motion-medium: 300ms;
+  --motion-slow: 900ms;
+}
+[data-theme='blackhole'] {
+  color: var(--bh-text);
+  background: var(--bh-bg);
+}

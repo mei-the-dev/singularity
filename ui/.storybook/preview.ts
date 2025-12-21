@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/react';
-import '../app/globals.css';
 
+// NOTE: Use `preview.tsx` for JSX decorators. Keep this file minimal to avoid
+// transform issues with esbuild parsing JSX inside .ts files.
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
@@ -14,13 +15,7 @@ const preview: Preview = {
     },
     layout: 'centered'
   },
-  decorators: [
-    (Story) => (
-      <div className="text-amber-100 antialiased selection:bg-amber-500/30 bg-black min-h-screen p-6">
-        <Story />
-      </div>
-    )
-  ]
+  decorators: []
 };
 
 export default preview;

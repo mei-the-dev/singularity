@@ -1,0 +1,13 @@
+/* Storybook preview - enable Tailwind utilities for stories */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure Storybook canvas and root occupy full height for fullscreen layouts */
+:root, html, body, #root, .sbdocs, .sbdocs .sbdocs-wrapper, .sb-show-main, .sb-preview, .sb-padded { height: 100%; min-height: 100vh; }
+
+/* Make the canvas use full bleed when using `layout: 'fullscreen'` */
+.sb-show-main { display: flex; }
+
+/* Basic defaults to make background visible in snapshots */
+body { background: #000; color: var(--bh-text, #f8f8f2); }

@@ -1,0 +1,13 @@
+.bh-backdrop { position: fixed; inset: 0; pointer-events: none }
+.bh-blackhole { position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 60%) }
+
+@keyframes orbit { from { transform: rotate(0deg) translateX(200px) rotate(0deg) } to { transform: rotate(360deg) translateX(200px) rotate(-360deg) } }
+.bh-particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #ffb86c; animation: orbit 14s linear infinite }
+
+.animate-spin-slow { animation: spin-slow 20s linear infinite }
+.animate-spin-slower { animation: spin-slower 30s linear infinite }
+.animate-spin-reverse { animation: spin-reverse 25s linear infinite }
+
+@keyframes spin-slow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes spin-slower{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes spin-reverse{from{transform:rotate(360deg)}to{transform:rotate(0)}}

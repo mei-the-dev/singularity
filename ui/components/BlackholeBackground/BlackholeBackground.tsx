@@ -21,19 +21,23 @@ export const BlackholeBackground: React.FC<BlackholeBackgroundProps> = ({ classN
         <div className="absolute inset-16 rounded-full bg-black shadow-2xl" />
       </div>
 
-      {[...Array(30)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1 h-1 bg-amber-400 rounded-full animate-orbit"
-          style={{
-            left: '50%',
-            top: '50%',
-            animationDelay: `${i * 0.3}s`,
-            animationDuration: `${10 + i}s`,
-            opacity: Math.random() * 0.7 + 0.3
-          }}
-        />
-      ))}
+      {[...Array(30)].map((_, i) => {
+        const opacity = 0.3 + (i / 29) * 0.7; // deterministic opacity across runs
+        return (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-amber-400 rounded-full animate-orbit"
+            style={{
+              left: '50%',
+              top: '50%',
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: `${10 + i}s`,
+              opacity,
+              transformOrigin: 'center'
+            }}
+          />
+        )
+      })}
     </div>
   );
 };
